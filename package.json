@@ -1,0 +1,10 @@
+{
+  "name": "gr20",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "data:trace": "node scripts/fetch-trace.mjs",
+    "data:elevation": "node scripts/add-elevation.mjs",
+    "data:segments": "node scripts/build-segments.mjs"
+  }
+}
