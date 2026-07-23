@@ -1,0 +1,26 @@
+{
+  "comment": "Découpage officiel PNRC 2026 (= découpage classique actuel en 16 étapes). Temps : fourchettes mongr20.com croisées objectif-gr20.fr ; distances/dénivelés indicatifs des sources (nos valeurs canoniques sont recalculées depuis le tracé OSM + IGN dans segments.json). Nuit à Castel di Verghio et crête Monte Incudine = variantes, pas le tracé standard.",
+  "sources": [
+    "https://pnr-resa.corsica/ (séquence officielle des nuitées)",
+    "https://mongr20.com/en/gr20-stages",
+    "https://objectif-gr20.fr/gr20-etapes/"
+  ],
+  "stages": [
+    { "num": 1, "from": "calenzana", "to": "ortu-di-u-piobbu", "temps_h_min": 4.5, "temps_h_max": 7.4 },
+    { "num": 2, "from": "ortu-di-u-piobbu", "to": "carrozzu", "temps_h_min": 2.75, "temps_h_max": 6.75 },
+    { "num": 3, "from": "carrozzu", "to": "ascu-stagnu", "temps_h_min": 2.5, "temps_h_max": 6.2 },
+    { "num": 4, "from": "ascu-stagnu", "to": "tighjettu", "temps_h_min": 4.0, "temps_h_max": 8.0 },
+    { "num": 5, "from": "tighjettu", "to": "ciottulu-di-i-mori", "temps_h_min": 2.5, "temps_h_max": 4.0 },
+    { "num": 6, "from": "ciottulu-di-i-mori", "to": "manganu", "temps_h_min": 6.2, "temps_h_max": 10.0 },
+    { "num": 7, "from": "manganu", "to": "petra-piana", "temps_h_min": 3.25, "temps_h_max": 6.5 },
+    { "num": 8, "from": "petra-piana", "to": "onda", "temps_h_min": 3.0, "temps_h_max": 4.8 },
+    { "num": 9, "from": "onda", "to": "vizzavona", "temps_h_min": 3.4, "temps_h_max": 6.0 },
+    { "num": 10, "from": "vizzavona", "to": "e-capannelle", "temps_h_min": 4.3, "temps_h_max": 7.0 },
+    { "num": 11, "from": "e-capannelle", "to": "prati", "temps_h_min": 5.0, "temps_h_max": 8.0 },
+    { "num": 12, "from": "prati", "to": "usciolu", "temps_h_min": 3.4, "temps_h_max": 6.0 },
+    { "num": 13, "from": "usciolu", "to": "matalza", "temps_h_min": 2.7, "temps_h_max": 4.75 },
+    { "num": 14, "from": "matalza", "to": "asinau", "temps_h_min": 3.1, "temps_h_max": 5.0 },
+    { "num": 15, "from": "asinau", "to": "paliri", "temps_h_min": 3.9, "temps_h_max": 6.4 },
+    { "num": 16, "from": "paliri", "to": "conca", "temps_h_min": 3.25, "temps_h_max": 5.25 }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "comment": "Nœuds du graphe GR20. Les waypoints on-route (off_route absent/false) découpent le tracé principal en segments ; off_route=true = lieu d'hébergement hors tracé (rattaché à la zone, ne coupe pas le tracé). Coords WGS84 vérifiées par agents (sources croisées OSM/refuges.info/gr20-infos).",
+  "waypoints": [
+    { "id": "calenzana", "name": "Calenzana", "type": "village", "lat": 42.510319, "lon": 8.85104, "altitude_m": 275 },
+    { "id": "ortu-di-u-piobbu", "name": "Refuge d'Ortu di u Piobbu", "type": "refuge", "lat": 42.46508, "lon": 8.90682, "altitude_m": 1520 },
+    { "id": "carrozzu", "name": "Refuge de Carrozzu", "type": "refuge", "lat": 42.426282, "lon": 8.900496, "altitude_m": 1270 },
+    { "id": "ascu-stagnu", "name": "Ascu Stagnu (Haut Asco)", "type": "station", "lat": 42.4035, "lon": 8.9225, "altitude_m": 1422 },
+    { "id": "tighjettu", "name": "Refuge de Tighjettu", "type": "refuge", "lat": 42.362276, "lon": 8.908821, "altitude_m": 1683 },
+    { "id": "ballone", "name": "Bergerie de Ballone", "type": "bergerie", "lat": 42.352905, "lon": 8.907833, "altitude_m": 1440 },
+    { "id": "ciottulu-di-i-mori", "name": "Refuge de Ciottulu di i Mori", "type": "refuge", "lat": 42.33484, "lon": 8.86783, "altitude_m": 1991 },
+    { "id": "castel-di-verghio", "name": "Castel di Verghio (col de Vergio)", "type": "col", "lat": 42.286888, "lon": 8.894947, "altitude_m": 1404 },
+    { "id": "vaccaghja", "name": "Bergerie de Vaccaghja", "type": "bergerie", "lat": 42.23678, "lon": 8.97418, "altitude_m": 1595 },
+    { "id": "manganu", "name": "Refuge de Manganu", "type": "refuge", "lat": 42.219876, "lon": 8.980447, "altitude_m": 1601 },
+    { "id": "petra-piana", "name": "Refuge de Petra Piana", "type": "refuge", "lat": 42.198125, "lon": 9.052298, "altitude_m": 1842 },
+    { "id": "onda", "name": "Refuge de l'Onda", "type": "refuge", "lat": 42.152259, "lon": 9.072458, "altitude_m": 1431 },
+    { "id": "vizzavona", "name": "Vizzavona (gare)", "type": "village", "lat": 42.127509, "lon": 9.133656, "altitude_m": 910 },
+    { "id": "e-capannelle", "name": "E Capannelle", "type": "station", "lat": 42.077281, "lon": 9.150242, "altitude_m": 1586 },
+    { "id": "bocca-di-verdi", "name": "Bocca di Verdi (col de Verde)", "type": "col", "lat": 42.028197, "lon": 9.194809, "altitude_m": 1283 },
+    { "id": "prati", "name": "Refuge de Prati", "type": "refuge", "lat": 42.00864, "lon": 9.218302, "altitude_m": 1820 },
+    { "id": "usciolu", "name": "Refuge d'Usciolu", "type": "refuge", "lat": 41.9351421, "lon": 9.2059475, "altitude_m": 1750 },
+    { "id": "basseta", "name": "Bergerie de Basseta", "type": "bergerie", "lat": 41.885212, "lon": 9.14349, "altitude_m": 1360 },
+    { "id": "matalza", "name": "Refuge de Matalza", "type": "bergerie", "lat": 41.874287, "lon": 9.152372, "altitude_m": 1410 },
+    { "id": "i-croci", "name": "Refuge-bergerie I Croci", "type": "bergerie", "lat": 41.855231, "lon": 9.16368, "altitude_m": 1550 },
+    { "id": "asinau", "name": "Refuge d'Asinau", "type": "refuge", "lat": 41.8415, "lon": 9.21416, "altitude_m": 1536 },
+    { "id": "bavella", "name": "Col de Bavella", "type": "col", "lat": 41.795987, "lon": 9.22597, "altitude_m": 1210 },
+    { "id": "paliri", "name": "Refuge d'I Paliri", "type": "refuge", "lat": 41.794155, "lon": 9.25959, "altitude_m": 1055 },
+    { "id": "conca", "name": "Conca", "type": "village", "lat": 41.733244, "lon": 9.337683, "altitude_m": 250 }
+  ]
+}

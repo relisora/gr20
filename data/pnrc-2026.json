@@ -1,0 +1,37 @@
+{
+  "comment": "Tarifs et règles officielles PNRC saison 2026, confirmés par la CGV pnr-resa.corsica (article 2) et la FFRandonnée. Les repas ne sont PAS fixés par la CGV (prix par refuge, espèces).",
+  "saison": {
+    "ouverture_ventes": "2026-01-20",
+    "debut": "2026-05-16",
+    "fin": "2026-10-04",
+    "note": "Réservation obligatoire pour toute nuitée, y compris bivouac avec tente perso. Le refuge A Sega (hors GR20, vallée du Tavignano) ouvre dès le 2 mai."
+  },
+  "tarifs_eur": {
+    "dortoir": 20,
+    "bivouac": 12,
+    "tente_louee_1p": 27,
+    "tente_louee_2p": 39,
+    "repas_soir_min": 18,
+    "repas_soir_max": 28,
+    "petit_dej_min": 9,
+    "petit_dej_max": 13
+  },
+  "regles": {
+    "reservation": "Nominative, exclusivement en ligne sur pnr-resa.corsica, CB uniquement, jusqu'à 48 h avant le jour de présentation. Quittance à présenter au gardien à chaque étape (à sauvegarder hors-ligne).",
+    "place_garantie_jusqua": "19h00 le jour d'arrivée ; ensuite selon disponibilités.",
+    "modification": "Dates/refuges modifiables jusqu'à J-2 selon dispo (contact@pnr-resa.corsica / +33 4 20 06 12 00). La nature de la prestation (bat-flanc ↔ tente) n'est PAS modifiable : nouvelle résa + demande de remboursement. Pas de modification sur place auprès du gardien.",
+    "remboursement": "Sans motif : intégral jusqu'à J-60 (2 mois avant le début, date à date) via regieparc@net-c.com ; rien après. Médical : pas de remboursement, avoir valable l'année suivante si demande à J-10 avec justificatif. Irrecevable si une modification de date a déjà eu lieu ou si demande > 1 mois après la fin. Arrêté préfectoral (sentier fermé) : remboursement des seuls jours concernés.",
+    "repas": "Non réservables en ligne — à commander au gardien dès l'arrivée, paiement en espèces (prévoir 150-200 €, aucun distributeur sur le tracé)."
+  },
+  "echeances_type": [
+    { "id": "ouverture-ventes", "libelle": "Ouverture des ventes PNRC", "regle": "~20 janvier de l'année du trek" },
+    { "id": "remboursement-j60", "libelle": "Dernier jour de remboursement intégral", "regle": "J-60 avant le début du trek" },
+    { "id": "avoir-medical-j10", "libelle": "Limite demande d'avoir médical", "regle": "J-10 avant le départ" },
+    { "id": "modification-j2", "libelle": "Limite de modification dates/refuges", "regle": "J-2 avant chaque étape" }
+  ],
+  "sources": [
+    "https://pnr-resa.corsica/CGV.pdf",
+    "https://www.ffrandonnee.fr/s-informer/actualites/gr-20-ouverture-des-reservations-pour-la-saison-2026",
+    "https://gr20-infos.com/gr20-2026-les-prix/"
+  ]
+}

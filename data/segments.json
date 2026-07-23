@@ -1,0 +1,573 @@
+{
+  "generated_at": "2026-07-23",
+  "params": {
+    "hysteresis_m": 5,
+    "speeds": {
+      "flat_kmh": 4,
+      "up_mh": 350,
+      "down_mh": 600
+    }
+  },
+  "waypoint_order": [
+    {
+      "id": "calenzana",
+      "trace_index": 0,
+      "dist_to_trail_m": 394
+    },
+    {
+      "id": "ortu-di-u-piobbu",
+      "trace_index": 453,
+      "dist_to_trail_m": 7
+    },
+    {
+      "id": "carrozzu",
+      "trace_index": 755,
+      "dist_to_trail_m": 15
+    },
+    {
+      "id": "ascu-stagnu",
+      "trace_index": 1038,
+      "dist_to_trail_m": 12
+    },
+    {
+      "id": "tighjettu",
+      "trace_index": 1662,
+      "dist_to_trail_m": 95
+    },
+    {
+      "id": "ballone",
+      "trace_index": 1723,
+      "dist_to_trail_m": 11
+    },
+    {
+      "id": "ciottulu-di-i-mori",
+      "trace_index": 1951,
+      "dist_to_trail_m": 6
+    },
+    {
+      "id": "castel-di-verghio",
+      "trace_index": 2332,
+      "dist_to_trail_m": 58
+    },
+    {
+      "id": "vaccaghja",
+      "trace_index": 3016,
+      "dist_to_trail_m": 14
+    },
+    {
+      "id": "manganu",
+      "trace_index": 3093,
+      "dist_to_trail_m": 8
+    },
+    {
+      "id": "petra-piana",
+      "trace_index": 3567,
+      "dist_to_trail_m": 63
+    },
+    {
+      "id": "onda",
+      "trace_index": 3991,
+      "dist_to_trail_m": 21
+    },
+    {
+      "id": "vizzavona",
+      "trace_index": 4294,
+      "dist_to_trail_m": 81
+    },
+    {
+      "id": "e-capannelle",
+      "trace_index": 4753,
+      "dist_to_trail_m": 4
+    },
+    {
+      "id": "bocca-di-verdi",
+      "trace_index": 5122,
+      "dist_to_trail_m": 0
+    },
+    {
+      "id": "prati",
+      "trace_index": 5270,
+      "dist_to_trail_m": 12
+    },
+    {
+      "id": "usciolu",
+      "trace_index": 6123,
+      "dist_to_trail_m": 6
+    },
+    {
+      "id": "basseta",
+      "trace_index": 6684,
+      "dist_to_trail_m": 131
+    },
+    {
+      "id": "matalza",
+      "trace_index": 6767,
+      "dist_to_trail_m": 27
+    },
+    {
+      "id": "i-croci",
+      "trace_index": 6875,
+      "dist_to_trail_m": 188
+    },
+    {
+      "id": "asinau",
+      "trace_index": 7334,
+      "dist_to_trail_m": 4
+    },
+    {
+      "id": "bavella",
+      "trace_index": 7943,
+      "dist_to_trail_m": 11
+    },
+    {
+      "id": "paliri",
+      "trace_index": 8157,
+      "dist_to_trail_m": 24
+    },
+    {
+      "id": "conca",
+      "trace_index": 8865,
+      "dist_to_trail_m": 350
+    }
+  ],
+  "segments": [
+    {
+      "id": "calenzana--ortu-di-u-piobbu",
+      "from": "calenzana",
+      "to": "ortu-di-u-piobbu",
+      "distance_km": 11.21,
+      "d_plus_m": 1450,
+      "d_minus_m": 171,
+      "ele_min_m": 273,
+      "ele_max_m": 1578,
+      "time_base_h": 7.23,
+      "terrain_factor": 0.82,
+      "time_h": 5.93,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 0,
+        "end": 453
+      },
+      "official_stage": "calenzana--ortu-di-u-piobbu"
+    },
+    {
+      "id": "ortu-di-u-piobbu--carrozzu",
+      "from": "ortu-di-u-piobbu",
+      "to": "carrozzu",
+      "distance_km": 7.32,
+      "d_plus_m": 765,
+      "d_minus_m": 1042,
+      "ele_min_m": 1268,
+      "ele_max_m": 2046,
+      "time_base_h": 5.75,
+      "terrain_factor": 0.83,
+      "time_h": 4.77,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 453,
+        "end": 755
+      },
+      "official_stage": "ortu-di-u-piobbu--carrozzu"
+    },
+    {
+      "id": "carrozzu--ascu-stagnu",
+      "from": "carrozzu",
+      "to": "ascu-stagnu",
+      "distance_km": 4.9,
+      "d_plus_m": 875,
+      "d_minus_m": 713,
+      "ele_min_m": 1214,
+      "ele_max_m": 1997,
+      "time_base_h": 4.91,
+      "terrain_factor": 0.89,
+      "time_h": 4.37,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 755,
+        "end": 1038
+      },
+      "official_stage": "carrozzu--ascu-stagnu"
+    },
+    {
+      "id": "ascu-stagnu--tighjettu",
+      "from": "ascu-stagnu",
+      "to": "tighjettu",
+      "distance_km": 8.26,
+      "d_plus_m": 1247,
+      "d_minus_m": 1006,
+      "ele_min_m": 1413,
+      "ele_max_m": 2599,
+      "time_base_h": 7.3,
+      "terrain_factor": 0.82,
+      "time_h": 5.99,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 1038,
+        "end": 1662
+      },
+      "official_stage": "ascu-stagnu--tighjettu"
+    },
+    {
+      "id": "tighjettu--ballone",
+      "from": "tighjettu",
+      "to": "ballone",
+      "distance_km": 1.16,
+      "d_plus_m": 0,
+      "d_minus_m": 219,
+      "ele_min_m": 1444,
+      "ele_max_m": 1667,
+      "time_base_h": 0.65,
+      "terrain_factor": 0.77,
+      "time_h": 0.5,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 1662,
+        "end": 1723
+      },
+      "official_stage": "tighjettu--ciottulu-di-i-mori"
+    },
+    {
+      "id": "ballone--ciottulu-di-i-mori",
+      "from": "ballone",
+      "to": "ciottulu-di-i-mori",
+      "distance_km": 5.23,
+      "d_plus_m": 703,
+      "d_minus_m": 154,
+      "ele_min_m": 1371,
+      "ele_max_m": 2037,
+      "time_base_h": 3.57,
+      "terrain_factor": 0.77,
+      "time_h": 2.75,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 1723,
+        "end": 1951
+      },
+      "official_stage": "tighjettu--ciottulu-di-i-mori"
+    },
+    {
+      "id": "ciottulu-di-i-mori--castel-di-verghio",
+      "from": "ciottulu-di-i-mori",
+      "to": "castel-di-verghio",
+      "distance_km": 8.5,
+      "d_plus_m": 115,
+      "d_minus_m": 713,
+      "ele_min_m": 1363,
+      "ele_max_m": 1998,
+      "time_base_h": 3.64,
+      "terrain_factor": 0.78,
+      "time_h": 2.84,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 1951,
+        "end": 2332
+      },
+      "official_stage": "ciottulu-di-i-mori--manganu"
+    },
+    {
+      "id": "castel-di-verghio--vaccaghja",
+      "from": "castel-di-verghio",
+      "to": "vaccaghja",
+      "distance_km": 14.27,
+      "d_plus_m": 585,
+      "d_minus_m": 390,
+      "ele_min_m": 1324,
+      "ele_max_m": 1883,
+      "time_base_h": 5.89,
+      "terrain_factor": 0.78,
+      "time_h": 4.59,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 2332,
+        "end": 3016
+      },
+      "official_stage": "ciottulu-di-i-mori--manganu"
+    },
+    {
+      "id": "vaccaghja--manganu",
+      "from": "vaccaghja",
+      "to": "manganu",
+      "distance_km": 2.04,
+      "d_plus_m": 67,
+      "d_minus_m": 60,
+      "ele_min_m": 1543,
+      "ele_max_m": 1604,
+      "time_base_h": 0.8,
+      "terrain_factor": 0.78,
+      "time_h": 0.62,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 3016,
+        "end": 3093
+      },
+      "official_stage": "ciottulu-di-i-mori--manganu"
+    },
+    {
+      "id": "manganu--petra-piana",
+      "from": "manganu",
+      "to": "petra-piana",
+      "distance_km": 8.37,
+      "d_plus_m": 898,
+      "d_minus_m": 650,
+      "ele_min_m": 1604,
+      "ele_max_m": 2235,
+      "time_base_h": 5.74,
+      "terrain_factor": 0.85,
+      "time_h": 4.88,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 3093,
+        "end": 3567
+      },
+      "official_stage": "manganu--petra-piana"
+    },
+    {
+      "id": "petra-piana--onda",
+      "from": "petra-piana",
+      "to": "onda",
+      "distance_km": 9.99,
+      "d_plus_m": 511,
+      "d_minus_m": 918,
+      "ele_min_m": 934,
+      "ele_max_m": 1851,
+      "time_base_h": 5.49,
+      "terrain_factor": 0.71,
+      "time_h": 3.9,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 3567,
+        "end": 3991
+      },
+      "official_stage": "petra-piana--onda"
+    },
+    {
+      "id": "onda--vizzavona",
+      "from": "onda",
+      "to": "vizzavona",
+      "distance_km": 10.07,
+      "d_plus_m": 684,
+      "d_minus_m": 1188,
+      "ele_min_m": 935,
+      "ele_max_m": 2115,
+      "time_base_h": 6.45,
+      "terrain_factor": 0.73,
+      "time_h": 4.71,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 3991,
+        "end": 4294
+      },
+      "official_stage": "onda--vizzavona"
+    },
+    {
+      "id": "vizzavona--e-capannelle",
+      "from": "vizzavona",
+      "to": "e-capannelle",
+      "distance_km": 13.88,
+      "d_plus_m": 1037,
+      "d_minus_m": 375,
+      "ele_min_m": 937,
+      "ele_max_m": 1643,
+      "time_base_h": 7.06,
+      "terrain_factor": 0.8,
+      "time_h": 5.65,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 4294,
+        "end": 4753
+      },
+      "official_stage": "vizzavona--e-capannelle"
+    },
+    {
+      "id": "e-capannelle--bocca-di-verdi",
+      "from": "e-capannelle",
+      "to": "bocca-di-verdi",
+      "distance_km": 12.83,
+      "d_plus_m": 447,
+      "d_minus_m": 760,
+      "ele_min_m": 1268,
+      "ele_max_m": 1629,
+      "time_base_h": 5.75,
+      "terrain_factor": 0.74,
+      "time_h": 4.25,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 4753,
+        "end": 5122
+      },
+      "official_stage": "e-capannelle--prati"
+    },
+    {
+      "id": "bocca-di-verdi--prati",
+      "from": "bocca-di-verdi",
+      "to": "prati",
+      "distance_km": 4.75,
+      "d_plus_m": 592,
+      "d_minus_m": 66,
+      "ele_min_m": 1288,
+      "ele_max_m": 1860,
+      "time_base_h": 2.99,
+      "terrain_factor": 0.74,
+      "time_h": 2.21,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 5122,
+        "end": 5270
+      },
+      "official_stage": "e-capannelle--prati"
+    },
+    {
+      "id": "prati--usciolu",
+      "from": "prati",
+      "to": "usciolu",
+      "distance_km": 10.88,
+      "d_plus_m": 793,
+      "d_minus_m": 865,
+      "ele_min_m": 1509,
+      "ele_max_m": 2000,
+      "time_base_h": 6.43,
+      "terrain_factor": 0.73,
+      "time_h": 4.69,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 5270,
+        "end": 6123
+      },
+      "official_stage": "prati--usciolu"
+    },
+    {
+      "id": "usciolu--basseta",
+      "from": "usciolu",
+      "to": "basseta",
+      "distance_km": 9.26,
+      "d_plus_m": 275,
+      "d_minus_m": 702,
+      "ele_min_m": 1298,
+      "ele_max_m": 1834,
+      "time_base_h": 4.27,
+      "terrain_factor": 0.74,
+      "time_h": 3.16,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 6123,
+        "end": 6684
+      },
+      "official_stage": "usciolu--matalza"
+    },
+    {
+      "id": "basseta--matalza",
+      "from": "basseta",
+      "to": "matalza",
+      "distance_km": 1.62,
+      "d_plus_m": 113,
+      "d_minus_m": 18,
+      "ele_min_m": 1318,
+      "ele_max_m": 1413,
+      "time_base_h": 0.76,
+      "terrain_factor": 0.74,
+      "time_h": 0.56,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 6684,
+        "end": 6767
+      },
+      "official_stage": "usciolu--matalza"
+    },
+    {
+      "id": "matalza--i-croci",
+      "from": "matalza",
+      "to": "i-croci",
+      "distance_km": 2.95,
+      "d_plus_m": 139,
+      "d_minus_m": 12,
+      "ele_min_m": 1408,
+      "ele_max_m": 1543,
+      "time_base_h": 1.15,
+      "terrain_factor": 0.78,
+      "time_h": 0.9,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 6767,
+        "end": 6875
+      },
+      "official_stage": "matalza--asinau"
+    },
+    {
+      "id": "i-croci--asinau",
+      "from": "i-croci",
+      "to": "asinau",
+      "distance_km": 6.93,
+      "d_plus_m": 509,
+      "d_minus_m": 508,
+      "ele_min_m": 1540,
+      "ele_max_m": 2027,
+      "time_base_h": 4.03,
+      "terrain_factor": 0.78,
+      "time_h": 3.14,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 6875,
+        "end": 7334
+      },
+      "official_stage": "matalza--asinau"
+    },
+    {
+      "id": "asinau--bavella",
+      "from": "asinau",
+      "to": "bavella",
+      "distance_km": 10.71,
+      "d_plus_m": 419,
+      "d_minus_m": 743,
+      "ele_min_m": 1012,
+      "ele_max_m": 1540,
+      "time_base_h": 5.11,
+      "terrain_factor": 0.67,
+      "time_h": 3.42,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 7334,
+        "end": 7943
+      },
+      "official_stage": "asinau--paliri"
+    },
+    {
+      "id": "bavella--paliri",
+      "from": "bavella",
+      "to": "paliri",
+      "distance_km": 4.5,
+      "d_plus_m": 255,
+      "d_minus_m": 421,
+      "ele_min_m": 995,
+      "ele_max_m": 1213,
+      "time_base_h": 2.55,
+      "terrain_factor": 0.67,
+      "time_h": 1.71,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 7943,
+        "end": 8157
+      },
+      "official_stage": "asinau--paliri"
+    },
+    {
+      "id": "paliri--conca",
+      "from": "paliri",
+      "to": "conca",
+      "distance_km": 13.1,
+      "d_plus_m": 376,
+      "d_minus_m": 1170,
+      "ele_min_m": 250,
+      "ele_max_m": 1058,
+      "time_base_h": 6.3,
+      "terrain_factor": 0.67,
+      "time_h": 4.22,
+      "trace": {
+        "file": "raw/trace-main-elev.geojson",
+        "start": 8157,
+        "end": 8865
+      },
+      "official_stage": "paliri--conca"
+    }
+  ],
+  "calibrated_at": "2026-07-23"
+}
