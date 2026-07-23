@@ -9,6 +9,15 @@ export function formatPrice(eur: number | null): string {
   return eur == null ? '—' : `${eur} €`
 }
 
+export function formatDateFr(iso: string | null): string {
+  if (!iso) return '—'
+  return new Date(iso + 'T12:00:00').toLocaleDateString('fr-FR', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  })
+}
+
 export const ACCOMMODATION_TYPE_META: Record<string, { label: string; icon: string; color: string }> = {
   'refuge-pnrc': { label: 'Refuge PNRC', icon: 'i-lucide-house', color: 'primary' },
   'bergerie': { label: 'Bergerie', icon: 'i-lucide-tent-tree', color: 'warning' },

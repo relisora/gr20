@@ -8,5 +8,9 @@ export default defineNuxtConfig({
       meta: [{ name: 'description', content: 'Planification du GR20 : étapes, carte, hébergements, réservations' }],
     },
   },
+  routeRules: {
+    // le plan vit dans localStorage : rendu client uniquement (pas d'hydratation à risque)
+    '/plan': { ssr: false },
+  },
   compatibilityDate: '2026-07-01',
 })

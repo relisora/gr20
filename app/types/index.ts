@@ -68,6 +68,42 @@ export interface OfficialStage {
   temps_h_max: number
 }
 
+export type BookingStatus = 'a_reserver' | 'reserve' | 'complet' | 'liste_attente'
+
+export interface PlanNight {
+  waypointId: string
+  accommodationId: string | null
+  formuleType: string | null
+  booking: {
+    status: BookingStatus
+    reference: string
+    prixPayeEur: number | null
+    notes: string
+  }
+}
+
+export interface TrekPlan {
+  version: 1
+  startDate: string | null
+  partySize: number
+  paceFactor: number
+  includeMealsInBudget: boolean
+  nights: PlanNight[]
+}
+
+export interface PlanDay {
+  index: number
+  date: string | null
+  from: Waypoint
+  to: Waypoint
+  distance_km: number
+  d_plus_m: number
+  d_minus_m: number
+  time_h: number
+  night: PlanNight | null
+  isArrival: boolean
+}
+
 export interface StageRow {
   num: number
   from: Waypoint

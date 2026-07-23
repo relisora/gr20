@@ -5,6 +5,7 @@ const links = [
   { label: 'Tabloguide', icon: 'i-lucide-table-properties', to: '/' },
   { label: 'Carte', icon: 'i-lucide-map', to: '/carte' },
   { label: 'Hébergements', icon: 'i-lucide-bed', to: '/hebergements' },
+  { label: 'Mon plan', icon: 'i-lucide-calendar-check', to: '/plan' },
 ]
 </script>
 
