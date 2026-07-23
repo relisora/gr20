@@ -24,6 +24,7 @@ function newNight(waypointId: string): PlanNight {
 
 export function addDaysIso(iso: string, days: number): string {
   const d = new Date(iso + 'T12:00:00')
+  if (Number.isNaN(d.getTime())) return ''
   d.setDate(d.getDate() + days)
   return d.toISOString().slice(0, 10)
 }

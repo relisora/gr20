@@ -37,7 +37,7 @@ function popupHtml(wp: (typeof waypoints)[number]): string {
 onMounted(async () => {
   if (!mapEl.value) return
 
-  map = L.map(mapEl.value, { zoomControl: true })
+  map = L.map(mapEl.value, { zoomControl: true }).setView([42.15, 9.1], 9)
 
   const planIgn = L.tileLayer(
     'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
