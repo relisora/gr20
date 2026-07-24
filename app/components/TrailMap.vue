@@ -2,10 +2,14 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
+const props = defineProps<{ highlight?: { lat: number; lon: number } | null }>()
+
 const { waypoints, accommodationsByWaypoint, googleRatingFor } = useGr20()
+const { load: loadTrace } = useTrace()
 
 const mapEl = ref<HTMLElement | null>(null)
 let map: L.Map | null = null
+let highlightMarker: L.CircleMarker | null = null
 
 const WAYPOINT_COLORS: Record<string, string> = {
   refuge: '#059669',
@@ -62,12 +66,15 @@ onMounted(async () => {
   })
   planIgn.addTo(map)
 
-  const [main, variant] = await Promise.all([
-    $fetch<GeoJSON.Feature>('/data/trace-main-elev.geojson'),
+  const [tracePoints, variant] = await Promise.all([
+    loadTrace(),
     $fetch<GeoJSON.Feature>('/data/trace-var-incudine-elev.geojson'),
   ])
 
-  const mainLayer = L.geoJSON(main, { style: { color: '#dc2626', weight: 3, opacity: 0.9 } }).addTo(map)
+  const mainLayer = L.polyline(
+    tracePoints.map((p) => [p.lat, p.lon] as [number, number]),
+    { color: '#dc2626', weight: 3, opacity: 0.9 }
+  ).addTo(map)
   const variantLayer = L.geoJSON(variant, {
     style: { color: '#ea580c', weight: 3, opacity: 0.9, dashArray: '6 6' },
   }).addTo(map)
@@ -95,6 +102,38 @@ onMounted(async () => {
 
   map.fitBounds(mainLayer.getBounds(), { padding: [30, 30] })
 })
+
+// marqueur de survol piloté par le profil altimétrique
+watch(
+  () => props.highlight,
+  (h) => {
+    if (!map) return
+    if (!h) {
+      highlightMarker?.remove()
+      highlightMarker = null
+      return
+    }
+    if (!highlightMarker) {
+      highlightMarker = L.circleMarker([h.lat, h.lon], {
+        radius: 7,
+        color: '#1f2937',
+        weight: 3,
+        fillColor: '#ffffff',
+        fillOpacity: 1,
+        interactive: false,
+      }).addTo(map)
+    } else {
+      highlightMarker.setLatLng([h.lat, h.lon])
+    }
+    highlightMarker.bringToFront()
+  }
+)
+
+function panTo(lat: number, lon: number) {
+  map?.panTo([lat, lon], { animate: true, duration: 0.6 })
+}
+
+defineExpose({ panTo })
 
 onBeforeUnmount(() => {
   map?.remove()

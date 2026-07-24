@@ -16,7 +16,8 @@ npm run dev            # http://localhost:3000
 
 - `/` — Tabloguide : 16 étapes officielles 2026 (ou 23 segments fins), distances, D+/D-,
   temps calibrés sur les temps officiels, hébergements par étape
-- `/carte` — tracé + variante Incudine sur fond Plan IGN / OpenTopoMap / OSM, waypoints cliquables
+- `/carte` — tracé + variante Incudine sur fond Plan IGN / OpenTopoMap / OSM, waypoints cliquables,
+  profil altimétrique interactif synchronisé avec la carte (survol → marqueur, clic → recentrage)
 - `/hebergements` — comparateur filtrable des 31 hébergements, tarifs 2026, contacts,
   disponibilités pnr-resa (dernier scan)
 - `/plan` — plan de trek nuit par nuit (localStorage) : hébergement + formule par nuit, statut de
@@ -69,4 +70,4 @@ pipeline de régénération (`npm run data:trace` / `data:elevation` / `data:seg
 3. ~~V1.5 — scan manuel des disponibilités pnr-resa (snapshot horodaté + bouton Rescan ; simple POST
    `stock.php`, Playwright inutile)~~
 4. V2 — ~~météo par refuge (Open-Meteo, prévisions 16 j sur les nuitées du plan)~~, ~~PWA hors-ligne~~,
-   profil altimétrique interactif
+   ~~profil altimétrique interactif~~

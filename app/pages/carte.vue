@@ -6,10 +6,24 @@ const legend = [
   { label: 'Col', color: '#78716c' },
   { label: 'Station', color: '#0284c7' },
 ]
+
+type Point = { lat: number; lon: number; km: number; ele: number }
+
+const mapRef = ref<{ panTo: (lat: number, lon: number) => void } | null>(null)
+const highlight = ref<{ lat: number; lon: number } | null>(null)
+
+function onHover(p: Point | null) {
+  highlight.value = p ? { lat: p.lat, lon: p.lon } : null
+}
+
+function onSelect(p: Point) {
+  highlight.value = { lat: p.lat, lon: p.lon }
+  mapRef.value?.panTo(p.lat, p.lon)
+}
 </script>
 
 <template>
-  <div class="flex h-[calc(100vh-var(--ui-header-height))] flex-col">
+  <div class="flex flex-col lg:h-[calc(100vh-var(--ui-header-height))]">
     <div class="border-b border-default flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 text-xs">
       <span class="text-muted">Légende :</span>
       <span v-for="l in legend" :key="l.label" class="flex items-center gap-1.5">
@@ -24,7 +38,14 @@ const legend = [
       </span>
     </div>
     <ClientOnly>
-      <TrailMap class="min-h-0 flex-1" />
+      <div class="h-[55vh] min-h-0 lg:h-auto lg:flex-1">
+        <TrailMap ref="mapRef" :highlight="highlight" class="h-full w-full" />
+      </div>
+      <ElevationProfile
+        class="shrink-0 border-t border-default"
+        @hover="onHover"
+        @select="onSelect"
+      />
       <template #fallback>
         <div class="flex flex-1 items-center justify-center text-muted">
           <UIcon name="i-lucide-loader-circle" class="size-6 animate-spin" />
