@@ -38,7 +38,7 @@ function formuleItems(night: PlanNight) {
   const acc = accommodationFor(night)
   if (!acc) return []
   return acc.formules.map((f) => ({
-    label: `${FORMULE_LABELS[f.type]} — ${formatPrice(f.prix_eur)}${f.prix_eur != null ? (f.par === 'chambre' ? '/ch.' : '/pers.') : ''}`,
+    label: `${FORMULE_LABELS[f.type]} — ${formatPrice(f.prix_eur)}${f.prix_eur != null ? (f.par === 'chambre' ? '/ch.' : f.par === 'tente' ? '/tente (2 pl.)' : '/pers.') : ''}`,
     value: f.type,
   }))
 }

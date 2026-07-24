@@ -27,7 +27,10 @@ export interface Segment {
 export interface Formule {
   type: 'dortoir' | 'bivouac' | 'tente_louee' | 'chambre' | 'camping' | 'demi-pension'
   prix_eur: number | null
-  par: 'personne' | 'chambre'
+  /** 'tente' : prix à la tente selon occupation (CGV PNRC : tentes 2 places, 27 € seul / 39 € à deux) */
+  par: 'personne' | 'chambre' | 'tente'
+  /** prix de la tente occupée par 2 personnes (par: 'tente' uniquement) */
+  prix_2p_eur?: number
   places?: number
   note?: string
 }

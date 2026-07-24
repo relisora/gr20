@@ -28,7 +28,7 @@
       "lat": 42.46508, "lon": 8.90682, "altitude_m": 1520,
       "formules": [
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
-        { "type": "tente_louee", "prix_eur": 27, "par": "personne", "note": "39 € pour 2 pers" }
+        { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": "froide", "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
@@ -46,7 +46,7 @@
       "formules": [
         { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 36 },
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
-        { "type": "tente_louee", "prix_eur": 27, "par": "personne", "note": "39 € pour 2 pers" }
+        { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
@@ -64,7 +64,7 @@
       "formules": [
         { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 32, "note": "chambres de 4" },
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
-        { "type": "tente_louee", "prix_eur": 27, "par": "personne", "note": "39 € pour 2 pers" }
+        { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "eau": true, "acces_route": true },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
@@ -100,7 +100,7 @@
       "formules": [
         { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 48 },
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
-        { "type": "tente_louee", "prix_eur": 27, "par": "personne", "note": "39 € pour 2 pers" }
+        { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
@@ -136,7 +136,7 @@
       "formules": [
         { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 28 },
         { "type": "bivouac", "prix_eur": 12, "par": "personne", "note": "~8 emplacements balisés" },
-        { "type": "tente_louee", "prix_eur": 27, "par": "personne", "note": "39 € pour 2 pers" }
+        { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
@@ -191,7 +191,7 @@
       "formules": [
         { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 26 },
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
-        { "type": "tente_louee", "prix_eur": 27, "par": "personne", "note": "39 € pour 2 pers" }
+        { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
@@ -209,7 +209,7 @@
       "formules": [
         { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 25 },
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
-        { "type": "tente_louee", "prix_eur": 27, "par": "personne", "note": "39 € pour 2 pers" }
+        { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": "froide", "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
@@ -227,7 +227,7 @@
       "formules": [
         { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 28 },
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
-        { "type": "tente_louee", "prix_eur": 27, "par": "personne", "note": "39 € pour 2 pers" }
+        { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
@@ -354,7 +354,7 @@
       "formules": [
         { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 32 },
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
-        { "type": "tente_louee", "prix_eur": 27, "par": "personne", "note": "39 € pour 2 pers" }
+        { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
@@ -372,7 +372,7 @@
       "formules": [
         { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 31 },
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
-        { "type": "tente_louee", "prix_eur": 27, "par": "personne", "note": "39 € pour 2 pers" }
+        { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
@@ -447,7 +447,7 @@
       "lat": 41.8415, "lon": 9.21416, "altitude_m": 1536,
       "formules": [
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
-        { "type": "tente_louee", "prix_eur": 27, "par": "personne", "note": "39 € pour 2 pers" }
+        { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": "froide", "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
@@ -517,7 +517,7 @@
       "formules": [
         { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 24 },
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
-        { "type": "tente_louee", "prix_eur": 27, "par": "personne", "note": "39 € pour 2 pers" }
+        { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },

@@ -189,7 +189,7 @@ const rescanRange = computed(() => {
                     />
                   </td>
                   <td class="py-1.5 text-right font-medium tabular-nums">
-                    {{ formatPrice(f.prix_eur) }}<span v-if="f.prix_eur != null" class="text-muted text-xs font-normal">/{{ f.par === 'chambre' ? 'ch.' : 'pers.' }}</span>
+                    {{ formatPrice(f.prix_eur) }}<span v-if="f.prix_eur != null" class="text-muted text-xs font-normal">/{{ f.par === 'chambre' ? 'ch.' : f.par === 'tente' ? 'tente' : 'pers.' }}</span>
                   </td>
                 </tr>
               </tbody>

@@ -140,7 +140,16 @@ export function usePlan() {
       const formule = formuleFor(night)
       const party = plan.value.partySize
       if (formule && formule.prix_eur != null) {
-        const cost = formule.par === 'chambre' ? formule.prix_eur : formule.prix_eur * party
+        let cost: number
+        if (formule.par === 'chambre') {
+          cost = formule.prix_eur
+        } else if (formule.par === 'tente') {
+          // tentes 2 places facturées à la tente selon occupation (CGV PNRC : 27 € seul, 39 € à deux)
+          const prixDeux = formule.prix_2p_eur ?? formule.prix_eur
+          cost = Math.floor(party / 2) * prixDeux + (party % 2) * formule.prix_eur
+        } else {
+          cost = formule.prix_eur * party
+        }
         nuitees += cost
         if (acc && acc.reservation.canal !== 'pnr-resa') especes += cost
       } else if (night.accommodationId) {
