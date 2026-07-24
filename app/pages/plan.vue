@@ -5,7 +5,21 @@ const {
   plan, days, stopCandidates, nightWaypointIds, toggleStop, initFromOfficial, resetPlan,
   accommodationFor, budget, bookingProgress, deadlines, seasonWarning,
 } = usePlan()
-const { accommodationsByWaypoint } = useGr20()
+const { accommodationsByWaypoint, waypointById } = useGr20()
+
+// décocher une nuitée détruit ses infos de résa : on confirme si elle en porte
+function onToggleStop(waypointId: string) {
+  const night = plan.value.nights.find((n) => n.waypointId === waypointId)
+  if (night) {
+    const b = night.booking
+    const hasBookingData = b.status !== 'a_reserver' || b.reference !== '' || b.notes !== '' || b.prixPayeEur != null
+    if (hasBookingData) {
+      const detail = [BOOKING_STATUS_META[b.status]?.label, b.reference && `réf. ${b.reference}`].filter(Boolean).join(', ')
+      if (!window.confirm(`Supprimer la nuitée « ${waypointById.get(waypointId)?.name} » et ses infos de réservation (${detail}) ?`)) return
+    }
+  }
+  toggleStop(waypointId)
+}
 
 const showStopsEditor = ref(false)
 
@@ -219,7 +233,9 @@ function confirmReset() {
                 :variant="nightWaypointIds.has(wp.id) ? 'solid' : 'outline'"
                 :color="nightWaypointIds.has(wp.id) ? 'primary' : 'neutral'"
                 :label="wp.name"
-                @click="toggleStop(wp.id)"
+                :disabled="nightWaypointIds.has(wp.id) && plan.nights.length === 1"
+                :title="nightWaypointIds.has(wp.id) && plan.nights.length === 1 ? 'Garde au moins une nuitée — utilise Réinitialiser pour repartir de zéro' : undefined"
+                @click="onToggleStop(wp.id)"
               />
             </div>
           </div>
