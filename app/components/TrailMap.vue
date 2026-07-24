@@ -2,7 +2,7 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-const { waypoints, accommodationsByWaypoint } = useGr20()
+const { waypoints, accommodationsByWaypoint, googleRatingFor } = useGr20()
 
 const mapEl = ref<HTMLElement | null>(null)
 let map: L.Map | null = null
@@ -23,7 +23,11 @@ function popupHtml(wp: (typeof waypoints)[number]): string {
         a.reservation.canal === 'pnr-resa'
           ? '<a href="https://pnr-resa.corsica" target="_blank" rel="noopener">pnr-resa</a>'
           : a.reservation.telephone ?? a.reservation.canal
-      return `<li><strong>${a.name}</strong><br><span style="opacity:.7">${resa}</span></li>`
+      const g = googleRatingFor(a.id)
+      const note = g?.note != null ? ` <span style="opacity:.8">★ ${g.note.toLocaleString('fr-FR', { minimumFractionDigits: 1 })}</span>` : ''
+      // pas de doublon quand l'hébergement porte le même nom que le waypoint
+      const nom = a.name === wp.name ? '' : `<strong>${a.name}</strong>`
+      return `<li>${nom}${note}${nom || note ? '<br>' : ''}<span style="opacity:.7">${resa}</span></li>`
     })
     .join('')
   return `

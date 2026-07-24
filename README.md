@@ -48,4 +48,5 @@ pipeline de régénération (`npm run data:trace` / `data:elevation` / `data:seg
 2. ~~V1 — plan de trek nuit par nuit (localStorage), marquage des réservations, échéancier, budget, export GPX~~
 3. ~~V1.5 — scan manuel des disponibilités pnr-resa (snapshot horodaté + bouton Rescan ; simple POST
    `stock.php`, Playwright inutile)~~
-4. V2 — météo par refuge, PWA hors-ligne, profil altimétrique interactif
+4. V2 — ~~météo par refuge (Open-Meteo, prévisions 16 j sur les nuitées du plan)~~, PWA hors-ligne,
+   profil altimétrique interactif

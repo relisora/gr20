@@ -30,6 +30,7 @@ const links = [
     <UFooter :ui="{ container: 'py-6 lg:py-6 lg:justify-center' }">
       <p class="text-muted text-center text-xs">
         Tracé © les contributeurs OpenStreetMap (ODbL) · Altitudes IGN RGE ALTI (Etalab 2.0) ·
+        Météo <ULink to="https://open-meteo.com" target="_blank" class="underline">Open-Meteo</ULink> (CC-BY 4.0) ·
         Réservation officielle des refuges :
         <ULink to="https://pnr-resa.corsica" target="_blank" class="underline">pnr-resa.corsica</ULink>
       </p>

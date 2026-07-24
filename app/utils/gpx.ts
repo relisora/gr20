@@ -39,6 +39,10 @@ ${trkpts}
   const a = document.createElement('a')
   a.href = url
   a.download = 'gr20-plan.gpx'
+  // l'ancre doit être dans le DOM (Firefox) et l'URL révoquée en différé,
+  // sinon le téléchargement peut être annulé avant de démarrer
+  document.body.appendChild(a)
   a.click()
-  URL.revokeObjectURL(url)
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 1_000)
 }

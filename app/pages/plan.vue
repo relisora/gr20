@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Accommodation, PlanNight } from '~/types'
+import type { Accommodation, PlanNight, Waypoint } from '~/types'
 
 const {
   plan, days, stopCandidates, nightWaypointIds, toggleStop, initFromOfficial, resetPlan,
@@ -79,6 +79,19 @@ const nightDispoByDay = computed(() => {
   return map
 })
 
+// météo Open-Meteo aux points d'arrivée des journées datées dans l'horizon de prévision
+const { load: loadMeteo } = useMeteo()
+const meteoWaypoints = computed<Waypoint[]>(() => {
+  const today = new Date().toLocaleDateString('en-CA')
+  const max = addDaysIso(today, METEO_HORIZON_JOURS - 1)
+  const seen = new Map<string, Waypoint>()
+  for (const day of days.value) {
+    if (day.date && day.date >= today && day.date <= max) seen.set(day.to.id, day.to)
+  }
+  return [...seen.values()]
+})
+watch(meteoWaypoints, (wps) => loadMeteo(wps), { immediate: true })
+
 const exporting = ref(false)
 async function exportGpx() {
   exporting.value = true
@@ -143,7 +156,7 @@ function confirmReset() {
           <template #header><span class="font-medium">Paramètres</span></template>
           <div class="space-y-4">
             <UFormField label="Date de départ (Calenzana)">
-              <UInput v-model="plan.startDate" type="date" class="w-full" />
+              <UInput v-model="plan.startDate" type="date" min="2020-01-01" max="2099-12-31" class="w-full" />
             </UFormField>
             <UFormField label="Nombre de personnes">
               <UInputNumber v-model="plan.partySize" :min="1" :max="12" class="w-full" />
@@ -254,7 +267,8 @@ function confirmReset() {
               <span class="font-medium">{{ day.from.name }} → {{ day.to.name }}</span>
               <span v-if="day.date" class="text-muted ml-2 text-sm">{{ formatDateFr(day.date) }}</span>
             </div>
-            <div class="text-muted flex gap-3 text-sm tabular-nums">
+            <div class="text-muted flex flex-wrap items-center gap-3 text-sm tabular-nums">
+              <MeteoNight v-if="day.date" :waypoint-id="day.to.id" :date-iso="day.date" :altitude="day.to.altitude_m" />
               <span>{{ day.distance_km }} km</span>
               <span class="text-success">+{{ day.d_plus_m }} m</span>
               <span class="text-error">−{{ day.d_minus_m }} m</span>
