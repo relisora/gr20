@@ -50,9 +50,15 @@ function doucheLabel(v: boolean | 'froide' | null): string {
 
 const { snapshot, load } = useDispo()
 await load()
+// date de début choisie pour le scan de dispo ; à défaut, plage du snapshot puis aujourd'hui
+const scanDebut = ref('')
 const rescanRange = computed(() => {
+  if (scanDebut.value) {
+    const fin = addDaysIso(scanDebut.value, 13)
+    if (fin) return { debut: scanDebut.value, fin }
+  }
   if (snapshot.value) return { debut: snapshot.value.dateDebut, fin: snapshot.value.dateFin }
-  const today = new Date().toISOString().slice(0, 10)
+  const today = new Date().toLocaleDateString('en-CA')
   return { debut: today, fin: addDaysIso(today, 13) }
 })
 </script>
@@ -69,7 +75,13 @@ const rescanRange = computed(() => {
       </p>
     </div>
 
-    <DispoBanner class="mb-6" :rescan-debut="rescanRange.debut" :rescan-fin="rescanRange.fin" />
+    <DispoBanner
+      class="mb-6"
+      v-model:debut="scanDebut"
+      editable-debut
+      :rescan-debut="rescanRange.debut"
+      :rescan-fin="rescanRange.fin"
+    />
 
     <div class="mb-8 flex flex-wrap gap-3">
       <USelectMenu

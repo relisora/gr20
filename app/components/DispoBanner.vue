@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import type { DispoLevel } from '~/types'
 
-const props = defineProps<{ rescanDebut: string; rescanFin: string }>()
+const props = defineProps<{ rescanDebut: string; rescanFin: string; editableDebut?: boolean }>()
+
+/** date de début choisie par l'utilisateur pour la fenêtre de scan (pages qui passent editable-debut) */
+const debut = defineModel<string>('debut')
+
+const todayIso = new Date().toLocaleDateString('en-CA')
 
 const { snapshot, scannedAtLabel, rescan, scanning, scanError } = useDispo()
 
@@ -34,6 +39,12 @@ onUnmounted(() => {
         </span>
       </template>
       <span v-else class="text-muted">Aucun scan de disponibilités pnr-resa pour l'instant.</span>
+      <span v-if="editableDebut" class="flex items-center gap-1.5">
+        <span class="text-muted">Scanner du</span>
+        <UTooltip text="Début de la fenêtre de scan (14 jours)">
+          <UInput v-model="debut" type="date" size="xs" :min="todayIso" class="w-34" />
+        </UTooltip>
+      </span>
       <UButton
         size="xs"
         variant="soft"
