@@ -108,12 +108,16 @@ function confirmReset() {
       </div>
     </div>
 
-    <div v-if="plan.nights.length === 0" class="py-16 text-center">
-      <UIcon name="i-lucide-route" class="text-muted mx-auto mb-4 size-12" />
-      <p class="mb-6 text-lg font-medium">Aucun plan pour l'instant</p>
-      <UButton size="lg" icon="i-lucide-sparkles" label="Partir des 16 étapes officielles" @click="initFromOfficial" />
-      <p class="text-muted mt-3 text-sm">Tu pourras ensuite fusionner/scinder les étapes nuit par nuit.</p>
-    </div>
+    <UEmpty
+      v-if="plan.nights.length === 0"
+      class="py-16"
+      variant="naked"
+      size="lg"
+      icon="i-lucide-route"
+      title="Aucun plan pour l'instant"
+      description="Tu pourras ensuite fusionner/scinder les étapes nuit par nuit."
+      :actions="[{ size: 'lg', icon: 'i-lucide-sparkles', label: 'Partir des 16 étapes officielles', onClick: initFromOfficial }]"
+    />
 
     <template v-else>
       <div class="mb-6 grid gap-4 lg:grid-cols-3">

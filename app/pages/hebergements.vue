@@ -150,11 +150,11 @@ const rescanRange = computed(() => {
               </tbody>
             </table>
 
-            <div class="text-muted flex flex-wrap gap-x-3 gap-y-1 text-xs">
-              <span v-if="acc.services.repas" class="flex items-center gap-1"><UIcon name="i-lucide-utensils" class="size-3.5" />Repas</span>
-              <span v-if="acc.services.epicerie" class="flex items-center gap-1"><UIcon name="i-lucide-shopping-basket" class="size-3.5" />Épicerie</span>
-              <span v-if="acc.services.douche" class="flex items-center gap-1"><UIcon name="i-lucide-shower-head" class="size-3.5" />{{ doucheLabel(acc.services.douche) }}</span>
-              <span v-if="acc.services.acces_route" class="flex items-center gap-1"><UIcon name="i-lucide-car" class="size-3.5" />Accès route</span>
+            <div class="flex flex-wrap gap-1.5">
+              <UBadge v-if="acc.services.repas" icon="i-lucide-utensils" color="neutral" variant="soft" size="sm" label="Repas" />
+              <UBadge v-if="acc.services.epicerie" icon="i-lucide-shopping-basket" color="neutral" variant="soft" size="sm" label="Épicerie" />
+              <UBadge v-if="acc.services.douche" icon="i-lucide-shower-head" color="neutral" variant="soft" size="sm" :label="doucheLabel(acc.services.douche)" />
+              <UBadge v-if="acc.services.acces_route" icon="i-lucide-car" color="neutral" variant="soft" size="sm" label="Accès route" />
             </div>
 
             <p class="text-muted text-xs leading-relaxed">{{ acc.notes }}</p>

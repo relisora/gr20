@@ -52,17 +52,17 @@ const stats = [
       </p>
     </div>
 
-    <div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <UCard v-for="s in stats" :key="s.label" :ui="{ body: 'p-4 sm:p-4' }">
-        <div class="flex items-center gap-3">
-          <UIcon :name="s.icon" class="text-primary size-5 shrink-0" />
-          <div>
-            <div class="text-muted text-xs">{{ s.label }}</div>
-            <div class="text-lg font-semibold tabular-nums">{{ s.value }}</div>
-          </div>
-        </div>
-      </UCard>
-    </div>
+    <UPageGrid class="mb-6 grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4">
+      <UPageCard
+        v-for="s in stats"
+        :key="s.label"
+        :icon="s.icon"
+        :title="s.value"
+        :description="s.label"
+        variant="outline"
+        :ui="{ container: 'p-4 sm:p-4 gap-y-0', leading: 'mb-1.5', title: 'tabular-nums text-lg', description: 'text-xs' }"
+      />
+    </UPageGrid>
 
     <div class="mb-4 flex items-center justify-between gap-4">
       <UTabs v-model="view" :items="viewItems" :content="false" size="sm" />

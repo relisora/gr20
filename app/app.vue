@@ -27,10 +27,12 @@ const links = [
       <NuxtPage />
     </UMain>
 
-    <footer class="border-t border-default py-6 text-center text-xs text-muted">
-      Tracé © les contributeurs OpenStreetMap (ODbL) · Altitudes IGN RGE ALTI (Etalab 2.0) ·
-      Réservation officielle des refuges :
-      <a href="https://pnr-resa.corsica" target="_blank" rel="noopener" class="underline">pnr-resa.corsica</a>
-    </footer>
+    <UFooter :ui="{ container: 'py-6 lg:py-6 lg:justify-center' }">
+      <p class="text-muted text-center text-xs">
+        Tracé © les contributeurs OpenStreetMap (ODbL) · Altitudes IGN RGE ALTI (Etalab 2.0) ·
+        Réservation officielle des refuges :
+        <ULink to="https://pnr-resa.corsica" target="_blank" class="underline">pnr-resa.corsica</ULink>
+      </p>
+    </UFooter>
   </UApp>
 </template>
