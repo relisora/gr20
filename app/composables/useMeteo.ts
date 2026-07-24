@@ -42,20 +42,17 @@ interface OpenMeteoDaily {
 
 const TTL_MS = 60 * 60 * 1000 // les prévisions bougent lentement, 1 h suffit
 
+// une seule requête en vol ; les appels concurrents attendent puis complètent ce qui manque
+let enVol: Promise<void> | null = null
+
 export function useMeteo() {
   const parWaypoint = useState<Record<string, MeteoJour[]>>('meteo-par-waypoint', () => ({}))
-  const fetchedAt = useState<number | null>('meteo-fetched-at', () => null)
+  // fraîcheur PAR waypoint : un fetch partiel ne doit pas « rajeunir » les autres
+  const fetchedAtParWp = useState<Record<string, number>>('meteo-fetched-at-wp', () => ({}))
   const loading = useState('meteo-loading', () => false)
   const error = useState<string | null>('meteo-error', () => null)
 
-  /** charge (ou recharge si périmé) les prévisions 16 jours pour ces waypoints, en une requête */
-  async function load(wps: Waypoint[]) {
-    if (import.meta.server || loading.value || wps.length === 0) return
-    const fresh = fetchedAt.value != null && Date.now() - fetchedAt.value < TTL_MS
-    const targets = fresh ? wps.filter((w) => !parWaypoint.value[w.id]) : wps
-    if (targets.length === 0) return
-
-    loading.value = true
+  async function fetchInto(targets: Waypoint[]) {
     error.value = null
     try {
       const res = await $fetch<unknown>('https://api.open-meteo.com/v1/forecast', {
@@ -83,12 +80,36 @@ export function useMeteo() {
           precipProbPct: r.daily.precipitation_probability_max[j] ?? null,
           ventMaxKmh: Math.round(r.daily.wind_speed_10m_max[j] ?? 0),
         }))
+        fetchedAtParWp.value[wp.id] = Date.now()
       }
-      fetchedAt.value = Date.now()
     } catch {
       error.value = 'Météo indisponible (Open-Meteo injoignable)'
+    }
+  }
+
+  /** charge (ou recharge si périmé) les prévisions 16 jours pour ces waypoints, en une requête */
+  async function load(wps: Waypoint[]) {
+    if (import.meta.server || wps.length === 0) return
+    // attendre la requête en cours plutôt que jeter l'appel : rien ne se perd
+    while (enVol) {
+      try {
+        await enVol
+      } catch {
+        /* les erreurs sont gérées dans fetchInto */
+      }
+    }
+    const now = Date.now()
+    const targets = wps.filter((w) => now - (fetchedAtParWp.value[w.id] ?? 0) > TTL_MS)
+    if (targets.length === 0) return
+
+    const run = fetchInto(targets)
+    enVol = run
+    loading.value = true
+    try {
+      await run
     } finally {
       loading.value = false
+      enVol = null
     }
   }
 
@@ -96,5 +117,5 @@ export function useMeteo() {
     return parWaypoint.value[waypointId]?.find((j) => j.date === dateIso) ?? null
   }
 
-  return { load, meteoFor, loading, error, fetchedAt }
+  return { load, meteoFor, loading, error }
 }

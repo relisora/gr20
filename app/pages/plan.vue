@@ -82,7 +82,8 @@ const nightDispoByDay = computed(() => {
 // météo Open-Meteo aux points d'arrivée des journées datées dans l'horizon de prévision
 const { load: loadMeteo } = useMeteo()
 const meteoWaypoints = computed<Waypoint[]>(() => {
-  const today = new Date().toLocaleDateString('en-CA')
+  // « aujourd'hui » en heure de Paris : les dates renvoyées par Open-Meteo le sont (timezone imposée)
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Paris' })
   const max = addDaysIso(today, METEO_HORIZON_JOURS - 1)
   const seen = new Map<string, Waypoint>()
   for (const day of days.value) {
