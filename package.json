@@ -10,7 +10,8 @@
     "data:trace": "node scripts/fetch-trace.mjs",
     "data:elevation": "node scripts/add-elevation.mjs",
     "data:segments": "node scripts/build-segments.mjs",
-    "data:publish": "mkdir -p public/data && cp data/raw/trace-main-elev.geojson data/raw/trace-var-incudine-elev.geojson public/data/"
+    "data:publish": "mkdir -p public/data && cp data/raw/trace-main-elev.geojson data/raw/trace-var-incudine-elev.geojson public/data/",
+    "data:dispo": "node scripts/scan-dispo.mjs"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.118",

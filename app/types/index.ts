@@ -68,6 +68,20 @@ export interface OfficialStage {
   temps_h_max: number
 }
 
+export type DispoLevel = 'dispo' | 'peu' | 'complet'
+
+export interface DispoSnapshot {
+  version: 1
+  scannedAt: string
+  dateDebut: string
+  dateFin: string
+  source: string
+  legende: Record<DispoLevel, string>
+  refugesIgnores: string[]
+  /** accommodationId → date ISO → formule → niveau */
+  dispo: Record<string, Record<string, Partial<Record<string, DispoLevel>>>>
+}
+
 export type BookingStatus = 'a_reserver' | 'reserve' | 'complet' | 'liste_attente'
 
 export interface PlanNight {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PlanNight } from '~/types'
+import type { Accommodation, PlanNight } from '~/types'
 
 const {
   plan, days, stopCandidates, nightWaypointIds, toggleStop, initFromOfficial, resetPlan,
@@ -39,6 +39,26 @@ const paceLabel = computed(() => {
   const pct = Math.round(plan.value.paceFactor * 100)
   if (pct === 100) return 'rythme officiel'
   return pct < 100 ? `${100 - pct} % plus rapide` : `${pct - 100} % plus lent`
+})
+
+const { dispoFor } = useDispo()
+const rescanRange = computed(() => {
+  if (plan.value.startDate && days.value.length > 1) {
+    return { debut: plan.value.startDate, fin: addDaysIso(plan.value.startDate, days.value.length - 2) }
+  }
+  const today = new Date().toISOString().slice(0, 10)
+  return { debut: today, fin: addDaysIso(today, 13) }
+})
+
+const nightDispoByDay = computed(() => {
+  const map = new Map<number, { accommodation: Accommodation; dateIso: string; selectedFormule: string | null }>()
+  for (const day of days.value) {
+    const acc = day.night ? accommodationFor(day.night) : null
+    if (!acc || !day.date || acc.reservation.canal !== 'pnr-resa') continue
+    if (!dispoFor(acc.id, day.date)) continue
+    map.set(day.index, { accommodation: acc, dateIso: day.date, selectedFormule: day.night!.formuleType })
+  }
+  return map
 })
 
 const exporting = ref(false)
@@ -173,6 +193,8 @@ function confirmReset() {
         :description="seasonWarning"
       />
 
+      <DispoBanner class="mb-6" :rescan-debut="rescanRange.debut" :rescan-fin="rescanRange.fin" />
+
       <UCollapsible v-model:open="showStopsEditor" class="mb-6">
         <UButton
           :icon="showStopsEditor ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
@@ -263,6 +285,7 @@ function confirmReset() {
                 variant="subtle"
                 :label="BOOKING_STATUS_META[day.night.booking.status]?.label"
               />
+              <DispoNight v-if="nightDispoByDay.has(day.index)" v-bind="nightDispoByDay.get(day.index)!" />
               <template v-if="accommodationFor(day.night)">
                 <UButton
                   v-if="accommodationFor(day.night)!.reservation.canal === 'pnr-resa'"

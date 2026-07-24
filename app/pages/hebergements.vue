@@ -47,6 +47,14 @@ function doucheLabel(v: boolean | 'froide' | null): string {
   if (v === 'froide') return 'Douche froide'
   return v ? 'Douche' : 'Pas de douche'
 }
+
+const { snapshot, load } = useDispo()
+await load()
+const rescanRange = computed(() => {
+  if (snapshot.value) return { debut: snapshot.value.dateDebut, fin: snapshot.value.dateFin }
+  const today = new Date().toISOString().slice(0, 10)
+  return { debut: today, fin: addDaysIso(today, 13) }
+})
 </script>
 
 <template>
@@ -60,6 +68,8 @@ function doucheLabel(v: boolean | 'froide' | null): string {
         les privés en direct.
       </p>
     </div>
+
+    <DispoBanner class="mb-6" :rescan-debut="rescanRange.debut" :rescan-fin="rescanRange.fin" />
 
     <div class="mb-8 flex flex-wrap gap-3">
       <USelectMenu
@@ -127,6 +137,11 @@ function doucheLabel(v: boolean | 'froide' | null): string {
                     {{ FORMULE_LABELS[f.type] }}
                     <span v-if="f.places" class="text-muted text-xs">· {{ f.places }} pl.</span>
                     <div v-if="f.note" class="text-muted text-xs">{{ f.note }}</div>
+                    <DispoDots
+                      v-if="acc.reservation.canal === 'pnr-resa'"
+                      :accommodation-id="acc.id"
+                      :formule-type="f.type"
+                    />
                   </td>
                   <td class="py-1.5 text-right font-medium tabular-nums">
                     {{ formatPrice(f.prix_eur) }}<span v-if="f.prix_eur != null" class="text-muted text-xs font-normal">/{{ f.par === 'chambre' ? 'ch.' : 'pers.' }}</span>
