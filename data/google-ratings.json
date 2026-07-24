@@ -1,5 +1,5 @@
 {
-  "comment": "Notes Google des hébergements privés (les refuges PNRC ne sont pas notés ici). Relevé manuel : chaque fiche Google Maps a été ouverte et vérifiée en direct (nom, adresse, coordonnées, téléphone) le 24 juillet 2026 — les annuaires qui republient les notes Google (Wanderlog, RestaurantGuru…) se sont révélés périmés de quelques mois. confiance: haute = fiche vue en direct sur Google Maps ; moyenne = republieur fiable ; basse = doute (homonymie…). Le champ fiche donne le nom exact de la fiche Google quand il diffère du nôtre.",
+  "comment": "Notes Google de tous les hébergements (refuges PNRC inclus). Relevé manuel : chaque fiche Google Maps a été ouverte et vérifiée en direct (nom, adresse, coordonnées, téléphone) le 24 juillet 2026 — les annuaires qui republient les notes Google (Wanderlog, RestaurantGuru…) se sont révélés périmés de quelques mois. confiance: haute = fiche vue en direct sur Google Maps ; moyenne = republieur fiable ; basse = doute (homonymie…). Le champ fiche donne le nom exact de la fiche Google quand il diffère du nôtre.",
   "version": 1,
   "releveLe": "2026-07-24",
   "source": "fiches Google Maps consultées en direct (navigateur), désambiguïsées par adresse/coordonnées/téléphone",
@@ -9,25 +9,70 @@
       "urlMaps": "https://www.google.com/maps/search/gite+d'etape+communal+Calenzana",
       "preuve": "Fiche vue en direct (D151A 20214 Calenzana, tél 04 95 62 77 13)."
     },
+    "refuge-ortu-di-u-piobbu": {
+      "note": 3.7, "nbAvis": 173, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+d'Ortu+di+u+Piobbu",
+      "preuve": "Fiche vue en direct (FW84+3Q Calenzana, liée à pnr-resa.corsica)."
+    },
+    "refuge-carrozzu": {
+      "note": 3.8, "nbAvis": 233, "confiance": "haute",
+      "fiche": "Refuge de Carozzu",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+de+Carozzu",
+      "preuve": "Fiche vue en direct (CWG2+G6 Calenzana, pnr-resa.corsica)."
+    },
+    "refuge-ascu-stagnu": {
+      "note": 4.1, "nbAvis": 314, "confiance": "haute",
+      "fiche": "Refuge Asco-Stagnu",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+Asco-Stagnu",
+      "preuve": "Fiche vue en direct (CW3C+9X Asco)."
+    },
     "hotel-le-chalet-asco": {
       "note": 4.2, "nbAvis": 303, "confiance": "haute",
       "urlMaps": "https://www.google.com/maps/search/Hôtel+Le+Chalet+Asco",
       "preuve": "Fiche « Hôtel Le Chalet » vue en direct (20276 Asco, hotel-lechalet-asco.com)."
+    },
+    "refuge-tighjettu": {
+      "note": 4.0, "nbAvis": 176, "confiance": "haute",
+      "fiche": "Refuge Tighiettu",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+Tighiettu",
+      "preuve": "Fiche vue en direct (9W65+WG Albertacce, pnr-resa.corsica)."
     },
     "bergerie-ballone": {
       "note": 4.6, "nbAvis": 144, "confiance": "haute",
       "urlMaps": "https://www.google.com/maps/place/?q=place_id:ChIJAd59AhCl0BIR5ZaVpZSHz1Q",
       "preuve": "Fiche « Bergerie de Ballone » vue en direct via place_id (Spelonche, 20224 Albertacce). La fiche restaurant « Auberge U Vallone » (4,7/26) est distincte."
     },
+    "refuge-ciottulu-di-i-mori": {
+      "note": 4.0, "nbAvis": 205, "confiance": "haute",
+      "fiche": "Refuge Ciuttulu Di I Mori",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+Ciuttulu+Di+I+Mori",
+      "preuve": "Fiche vue en direct (8VM9+X7 Albertacce, pnr-resa.corsica)."
+    },
     "castel-di-vergio": {
       "note": 3.7, "nbAvis": 501, "confiance": "haute",
       "urlMaps": "https://www.google.com/maps/search/Hôtel+Castel+de+Vergio",
       "preuve": "Fiche « Hôtel Castel de Vergio » vue en direct (Col de Verghiu, D84)."
     },
+    "refuge-manganu": {
+      "note": 4.1, "nbAvis": 170, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+de+Manganu",
+      "preuve": "Fiche principale vue en direct ; une fiche doublon quasi vide (3,5/2) existe au même endroit."
+    },
     "bergerie-vaccaghja": {
       "note": 2.9, "nbAvis": 109, "confiance": "haute",
       "urlMaps": "https://www.google.com/maps/search/Bergerie+de+Vaccaghja",
       "preuve": "Fiche principale vue en direct (une seconde fiche homonyme quasi vide existe, 1,0/1). Les republieurs affichaient encore 3,1/98."
+    },
+    "refuge-petra-piana": {
+      "note": 4.1, "nbAvis": 276, "confiance": "haute",
+      "fiche": "Refuge Petra Piana",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+Petra+Piana",
+      "preuve": "Fiche vue en direct (53X2+7W Venaco, pnr-resa.corsica)."
+    },
+    "refuge-onda": {
+      "note": 3.1, "nbAvis": 208, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+de+l'Onda+Vivario",
+      "preuve": "Fiche « Refuge de l'Onda » (tél PNRC 04 20 06 12 00) vue en direct lors de la désambiguïsation d'avec la bergerie privée voisine."
     },
     "bergerie-onda": {
       "note": 1.6, "nbAvis": 9, "confiance": "haute",
@@ -60,6 +105,16 @@
       "urlMaps": "https://www.google.com/maps/search/Relais+San+Petru+Di+Verdi",
       "preuve": "Fiche « Relais San Petru Di Verdi » vue en direct (Col de Verde, 20134 Palneca, boccadiverdi.com)."
     },
+    "refuge-prati": {
+      "note": 2.9, "nbAvis": 182, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+de+Prati",
+      "preuve": "Fiche vue en direct (2659+F8 Palneca, pnr-resa.corsica). Note basse : sanitaires spartiates, mais vue réputée superbe."
+    },
+    "refuge-usciolu": {
+      "note": 3.5, "nbAvis": 186, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+d'Usciolu",
+      "preuve": "Fiche vue en direct (W6P4+39 Cozzano, pnr-resa.corsica)."
+    },
     "bergerie-basseta": {
       "note": 4.6, "nbAvis": 234, "confiance": "haute",
       "urlMaps": "https://www.google.com/maps/search/Bergerie+de+Basseta+Zicavo",
@@ -74,6 +129,11 @@
       "note": 4.9, "nbAvis": 327, "confiance": "haute",
       "urlMaps": "https://www.google.com/maps/search/Bergerie+de+Croci+Zicavo",
       "preuve": "Fiche « Bergerie de Croci » vue en direct (Quartier Piazzi, 20132 Zicavo, gr20-croci.com). Note quasi parfaite réelle : avis élogieux (lasagnes, accueil)."
+    },
+    "refuge-asinau": {
+      "note": 3.4, "nbAvis": 388, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+d'Asinau",
+      "preuve": "Fiche vue en direct (R6R7+HP Quenza, pnr-resa.corsica), coordonnées exactes — bien distincte des « Bergeries d'Asinao » (Chez Aline)."
     },
     "bergerie-chez-aline": {
       "note": 4.1, "nbAvis": 33, "confiance": "haute",
@@ -90,6 +150,12 @@
       "note": 4.4, "nbAvis": 1944, "confiance": "haute",
       "urlMaps": "https://www.google.com/maps/search/Auberge+du+Col+de+Bavella",
       "preuve": "Fiche vue en direct (Place de la Fontaine, 20124 Bavella, auberge-bavella.com). Fiche auberge-restaurant : le volume d'avis reflète surtout le restaurant du col."
+    },
+    "refuge-i-paliri": {
+      "note": 4.0, "nbAvis": 250, "confiance": "haute",
+      "fiche": "Refuge I Paliri",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+I+Paliri",
+      "preuve": "Fiche vue en direct (Q7V5+RR Conca, pnr-resa.corsica)."
     },
     "gite-la-tonnelle": {
       "note": 4.2, "nbAvis": 272, "confiance": "haute",
