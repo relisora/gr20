@@ -82,6 +82,20 @@ export interface DispoSnapshot {
   dispo: Record<string, Record<string, Partial<Record<string, DispoLevel>>>>
 }
 
+export interface GoogleRating {
+  note: number | null
+  nbAvis: number | null
+  urlMaps: string | null
+  confiance: 'haute' | 'moyenne' | 'basse'
+}
+
+export interface GoogleRatingsFile {
+  version: 1
+  releveLe: string
+  source: string
+  notes: Record<string, GoogleRating>
+}
+
 export type BookingStatus = 'a_reserver' | 'reserve' | 'complet' | 'liste_attente'
 
 export interface PlanNight {

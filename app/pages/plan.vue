@@ -5,7 +5,7 @@ const {
   plan, days, stopCandidates, nightWaypointIds, toggleStop, initFromOfficial, resetPlan,
   accommodationFor, budget, bookingProgress, deadlines, seasonWarning,
 } = usePlan()
-const { accommodationsByWaypoint, waypointById } = useGr20()
+const { accommodationsByWaypoint, waypointById, googleRatingFor } = useGr20()
 
 // décocher une nuitée détruit ses infos de résa : on confirme si elle en porte
 function onToggleStop(waypointId: string) {
@@ -24,10 +24,14 @@ function onToggleStop(waypointId: string) {
 const showStopsEditor = ref(false)
 
 function accommodationItems(night: PlanNight) {
-  return (accommodationsByWaypoint.get(night.waypointId) ?? []).map((a) => ({
-    label: `${a.name} (${ACCOMMODATION_TYPE_META[a.type]?.label})`,
-    value: a.id,
-  }))
+  // note Google en tête de libellé : les noms sont longs et le menu tronque la fin
+  return (accommodationsByWaypoint.get(night.waypointId) ?? []).map((a) => {
+    const note = googleRatingFor(a.id)?.note
+    return {
+      label: note != null ? `★ ${note.toLocaleString('fr-FR', { minimumFractionDigits: 1 })} · ${a.name}` : a.name,
+      value: a.id,
+    }
+  })
 }
 
 function formuleItems(night: PlanNight) {
@@ -306,6 +310,7 @@ function confirmReset() {
                 :label="BOOKING_STATUS_META[day.night.booking.status]?.label"
               />
               <DispoNight v-if="nightDispoByDay.has(day.index)" v-bind="nightDispoByDay.get(day.index)!" />
+              <GoogleNote v-if="day.night.accommodationId" :accommodation-id="day.night.accommodationId" />
               <template v-if="accommodationFor(day.night)">
                 <UButton
                   v-if="accommodationFor(day.night)!.reservation.canal === 'pnr-resa'"

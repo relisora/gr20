@@ -1,0 +1,105 @@
+{
+  "comment": "Notes Google des hébergements privés (les refuges PNRC ne sont pas notés ici). Relevé manuel : chaque fiche Google Maps a été ouverte et vérifiée en direct (nom, adresse, coordonnées, téléphone) le 24 juillet 2026 — les annuaires qui republient les notes Google (Wanderlog, RestaurantGuru…) se sont révélés périmés de quelques mois. confiance: haute = fiche vue en direct sur Google Maps ; moyenne = republieur fiable ; basse = doute (homonymie…). Le champ fiche donne le nom exact de la fiche Google quand il diffère du nôtre.",
+  "version": 1,
+  "releveLe": "2026-07-24",
+  "source": "fiches Google Maps consultées en direct (navigateur), désambiguïsées par adresse/coordonnées/téléphone",
+  "notes": {
+    "gite-municipal-calenzana": {
+      "note": 3.8, "nbAvis": 100, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/gite+d'etape+communal+Calenzana",
+      "preuve": "Fiche vue en direct (D151A 20214 Calenzana, tél 04 95 62 77 13)."
+    },
+    "hotel-le-chalet-asco": {
+      "note": 4.2, "nbAvis": 303, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Hôtel+Le+Chalet+Asco",
+      "preuve": "Fiche « Hôtel Le Chalet » vue en direct (20276 Asco, hotel-lechalet-asco.com)."
+    },
+    "bergerie-ballone": {
+      "note": 4.6, "nbAvis": 144, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/place/?q=place_id:ChIJAd59AhCl0BIR5ZaVpZSHz1Q",
+      "preuve": "Fiche « Bergerie de Ballone » vue en direct via place_id (Spelonche, 20224 Albertacce). La fiche restaurant « Auberge U Vallone » (4,7/26) est distincte."
+    },
+    "castel-di-vergio": {
+      "note": 3.7, "nbAvis": 501, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Hôtel+Castel+de+Vergio",
+      "preuve": "Fiche « Hôtel Castel de Vergio » vue en direct (Col de Verghiu, D84)."
+    },
+    "bergerie-vaccaghja": {
+      "note": 2.9, "nbAvis": 109, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Bergerie+de+Vaccaghja",
+      "preuve": "Fiche principale vue en direct (une seconde fiche homonyme quasi vide existe, 1,0/1). Les republieurs affichaient encore 3,1/98."
+    },
+    "bergerie-onda": {
+      "note": 1.6, "nbAvis": 9, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Bergerie+de+l'Onda+Vivario",
+      "preuve": "Fiche « Bergerie de l'Onda » vue en direct (533F+8G Vivario). Ne pas confondre avec la fiche « Refuge de l'Onda » (PNRC, 3,1/208). Avis décrivant un accueil hostile."
+    },
+    "hotel-monte-doro": {
+      "note": 4.3, "nbAvis": 406, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Hôtel+Monte+D'Oro+Vizzavona",
+      "preuve": "Fiche « Hôtel-Restaurant Monte D'Oro » vue en direct (Col de Vizzavona, monte-oro.com)."
+    },
+    "hotel-i-laricci": {
+      "note": 4.5, "nbAvis": 207, "confiance": "haute",
+      "fiche": "Hôtel Restaurant Le Vizzavona",
+      "urlMaps": "https://www.google.com/maps/search/Hôtel+Restaurant+Le+Vizzavona",
+      "preuve": "L'hôtel a été renommé « Le Vizzavona » (même adresse à 50 m de la gare, même tél 04 95 47 21 12) ; note de la fiche actuelle, vue en direct."
+    },
+    "bivouac-alzarella": {
+      "note": 3.2, "nbAvis": 175, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Gr20+Alzarella+Bivouac+Vizzavona",
+      "preuve": "Fiche « Gr20 Alzarella Bivouac Vizzavona » vue en direct (22 Vizzavona, alzarella.com). Avis récents bien meilleurs que la moyenne (vieux contentieux prix)."
+    },
+    "gite-u-fugone": {
+      "note": 4.2, "nbAvis": 218, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Bergeries+de+E+Capanelle+Gîte+U+Fugone",
+      "preuve": "Fiche « Bergeries de E Capanelle - Gîte U Fugone » vue en direct (20227 Ghisoni). La fiche restaurant homonyme (4,1/82) est distincte."
+    },
+    "relais-san-petru-di-verde": {
+      "note": 4.2, "nbAvis": 269, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Relais+San+Petru+Di+Verdi",
+      "preuve": "Fiche « Relais San Petru Di Verdi » vue en direct (Col de Verde, 20134 Palneca, boccadiverdi.com)."
+    },
+    "bergerie-basseta": {
+      "note": 4.6, "nbAvis": 234, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Bergerie+de+Basseta+Zicavo",
+      "preuve": "Valeur live affichée par Google Maps (bloc recherches associées, catégorie refuge de montagne) ; Wanderlog concordant (4,6)."
+    },
+    "refuge-matalza": {
+      "note": 4.7, "nbAvis": 200, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Refuge+de+Matalza+Zicavo",
+      "preuve": "Fiche vue en direct (plateau du Coscione, 20132 Zicavo, refugedematalza.com)."
+    },
+    "bergerie-i-croci": {
+      "note": 4.9, "nbAvis": 327, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Bergerie+de+Croci+Zicavo",
+      "preuve": "Fiche « Bergerie de Croci » vue en direct (Quartier Piazzi, 20132 Zicavo, gr20-croci.com). Note quasi parfaite réelle : avis élogieux (lasagnes, accueil)."
+    },
+    "bergerie-chez-aline": {
+      "note": 4.1, "nbAvis": 33, "confiance": "haute",
+      "fiche": "Bergeries d'Asinao",
+      "urlMaps": "https://www.google.com/maps/search/Bergeries+d'Asinao+Quenza",
+      "preuve": "Fiche « Bergeries d'Asinao » vue en direct ; les avis nomment Aline et son fils Pierre-Do, tél concordant."
+    },
+    "gite-aiguilles-bavella": {
+      "note": 4.4, "nbAvis": 2084, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Les+Aiguilles+De+Bavella+Zonza",
+      "preuve": "Fiche « Les Aiguilles De Bavella » vue en direct (Col de Bavella, 20124 Zonza). Fiche restaurant+gîte : le volume d'avis reflète surtout le restaurant du col, très fréquenté."
+    },
+    "auberge-col-bavella": {
+      "note": 4.4, "nbAvis": 1944, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Auberge+du+Col+de+Bavella",
+      "preuve": "Fiche vue en direct (Place de la Fontaine, 20124 Bavella, auberge-bavella.com). Fiche auberge-restaurant : le volume d'avis reflète surtout le restaurant du col."
+    },
+    "gite-la-tonnelle": {
+      "note": 4.2, "nbAvis": 272, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Gite+de+la+Tonnelle+Conca",
+      "preuve": "Fiche « Gite de la Tonnelle » vue en direct (20135 Conca, gite-la-tonnelle.com)."
+    },
+    "hotel-san-pasquale": {
+      "note": 4.4, "nbAvis": 210, "confiance": "haute",
+      "urlMaps": "https://www.google.com/maps/search/Gîtes+Hotel+San+Pasquale+Conca",
+      "preuve": "Fiche « Gîtes Hotel San Pasquale » vue en direct (Francescoli, 20135 Conca, hotelsanpasquale.com)."
+    }
+  }
+}

@@ -3,7 +3,8 @@ import segmentsJson from '~~/data/segments.json'
 import accommodationsJson from '~~/data/accommodations.json'
 import stagesJson from '~~/data/stages-official.json'
 import pnrcJson from '~~/data/pnrc-2026.json'
-import type { Accommodation, OfficialStage, Segment, StageRow, Waypoint } from '~/types'
+import googleRatingsJson from '~~/data/google-ratings.json'
+import type { Accommodation, GoogleRating, OfficialStage, Segment, StageRow, Waypoint } from '~/types'
 
 const waypoints = waypointsJson.waypoints as Waypoint[]
 const segments = segmentsJson.segments as Segment[]
@@ -48,6 +49,13 @@ for (const acc of accommodations) {
   accommodationsByWaypoint.set(acc.waypoint, list)
 }
 
+const googleRatings = googleRatingsJson.notes as Record<string, GoogleRating>
+const googleRatingsReleveLe = googleRatingsJson.releveLe as string
+
+function googleRatingFor(accommodationId: string): GoogleRating | null {
+  return googleRatings[accommodationId] ?? null
+}
+
 const totals = {
   distance_km: +segments.reduce((s, x) => s + x.distance_km, 0).toFixed(1),
   d_plus_m: segments.reduce((s, x) => s + x.d_plus_m, 0),
@@ -65,6 +73,8 @@ export function useGr20() {
     stageRows,
     accommodations,
     accommodationsByWaypoint,
+    googleRatingFor,
+    googleRatingsReleveLe,
     totals,
     pnrc: pnrcJson,
   }

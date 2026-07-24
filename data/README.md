@@ -23,3 +23,4 @@
 | `waypoints.json` | Nœuds du graphe (lieux de nuitée, accès) | manuel |
 | `segments.json` | Arcs du graphe : géométrie, distance, D+/D-, temps | `scripts/build-segments.mjs` |
 | `accommodations.json` | Hébergements + formules + tarifs 2026 | manuel (vérifié par recherche) |
+| `google-ratings.json` | Notes Google des hébergements privés (note, nb d'avis, lien Maps) | manuel — fiches Google Maps ouvertes une à une et désambiguïsées (adresse/tél/coordonnées), relevé du 24 juil. 2026 |

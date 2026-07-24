@@ -118,7 +118,10 @@ const rescanRange = computed(() => {
             <div class="flex items-start justify-between gap-2">
               <div>
                 <div class="font-medium">{{ acc.name }}</div>
-                <div class="text-muted text-xs">{{ acc.ouverture }}</div>
+                <div class="flex flex-wrap items-center gap-x-2">
+                  <GoogleNote :accommodation-id="acc.id" />
+                  <span class="text-muted text-xs">{{ acc.ouverture }}</span>
+                </div>
               </div>
               <UBadge
                 :icon="ACCOMMODATION_TYPE_META[acc.type]?.icon"
