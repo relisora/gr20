@@ -7,6 +7,21 @@ const links = [
   { label: 'Hébergements', icon: 'i-lucide-bed', to: '/hebergements' },
   { label: 'Mon plan', icon: 'i-lucide-calendar-check', to: '/plan' },
 ]
+
+// état de connexion : uniquement côté client (navigator indisponible en SSR)
+const online = ref(true)
+function majOnline() {
+  online.value = navigator.onLine
+}
+onMounted(() => {
+  majOnline()
+  window.addEventListener('online', majOnline)
+  window.addEventListener('offline', majOnline)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('online', majOnline)
+  window.removeEventListener('offline', majOnline)
+})
 </script>
 
 <template>
@@ -15,6 +30,14 @@ const links = [
       <UNavigationMenu :items="links" />
 
       <template #right>
+        <UBadge
+          v-if="!online"
+          color="neutral"
+          variant="subtle"
+          size="sm"
+          icon="i-lucide-wifi-off"
+          label="Hors ligne"
+        />
         <UColorModeButton />
       </template>
 

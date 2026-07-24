@@ -22,6 +22,26 @@ npm run dev            # http://localhost:3000
 - `/plan` — plan de trek nuit par nuit (localStorage) : hébergement + formule par nuit, statut de
   réservation, échéancier PNRC, budget, dispo pnr-resa par nuit
 
+## Hors ligne / PWA
+
+L'app est installable et conçue pour fonctionner sans réseau (sur le terrain, la couverture est
+quasi nulle).
+
+- **Installation sur mobile** : ouvrir le site dans le navigateur puis « Ajouter à l'écran
+  d'accueil » (Chrome / Android) ou menu Partager → « Sur l'écran d'accueil » (Safari / iOS).
+  L'app s'ouvre alors en plein écran, sans barre d'URL.
+- **Précharger les tuiles de carte** : avant de partir, ouvrir `/carte` et parcourir le tracé aux
+  zooms utiles. Les tuiles **Plan IGN** (fond par défaut) et **OSM** consultées en ligne sont mises
+  en cache (jusqu'à ~2000, 30 jours) et restent affichables hors ligne. **OpenTopoMap** n'est pas
+  disponible hors ligne (son serveur n'autorise pas la mise en cache) : c'est une couche en ligne
+  uniquement.
+- **Météo** : la dernière prévision Open-Meteo consultée est conservée ~24 h ; hors réseau, l'app
+  réaffiche cette prévision (périmée, mais mieux que rien) au lieu d'une erreur.
+- Les 4 pages, les tracés GeoJSON et le dernier snapshot de disponibilités sont précachés : l'app
+  se lance et se parcourt intégralement hors ligne. Hors réseau, les disponibilités affichées sont
+  celles du dernier relevé connu (aucune mise à jour possible sans réseau). Un badge « Hors ligne »
+  apparaît dans l'en-tête quand la connexion est perdue.
+
 ## Scan des disponibilités pnr-resa
 
 La grille publique [pnr-resa.corsica/stock.php](https://pnr-resa.corsica/stock.php) donne la
@@ -48,5 +68,5 @@ pipeline de régénération (`npm run data:trace` / `data:elevation` / `data:seg
 2. ~~V1 — plan de trek nuit par nuit (localStorage), marquage des réservations, échéancier, budget, export GPX~~
 3. ~~V1.5 — scan manuel des disponibilités pnr-resa (snapshot horodaté + bouton Rescan ; simple POST
    `stock.php`, Playwright inutile)~~
-4. V2 — ~~météo par refuge (Open-Meteo, prévisions 16 j sur les nuitées du plan)~~, PWA hors-ligne,
+4. V2 — ~~météo par refuge (Open-Meteo, prévisions 16 j sur les nuitées du plan)~~, ~~PWA hors-ligne~~,
    profil altimétrique interactif

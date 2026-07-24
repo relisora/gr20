@@ -16,9 +16,17 @@ export function useDispo() {
     if (loaded.value && !force) return
     loaded.value = true
     try {
-      snapshot.value = await $fetch<DispoSnapshot>('/api/dispo', { query: { t: Date.now() } })
+      // URL stable (sans cache-buster) : /api/dispo renvoie déjà Cache-Control: no-store, et une URL
+      // constante permet à NetworkFirst de resservir la dernière réponse hors ligne.
+      snapshot.value = await $fetch<DispoSnapshot>('/api/dispo')
     } catch {
-      snapshot.value = null
+      try {
+        // repli hors ligne : le fichier statique précaché (même forme que /api/dispo, qui ne fait
+        // que le relire depuis le disque) ; sans query string, sinon le précache ne matche pas.
+        snapshot.value = await $fetch<DispoSnapshot>('/data/dispo-snapshot.json')
+      } catch {
+        snapshot.value = null
+      }
     }
   }
   // Fallback client (la page /plan est ssr:false) ; les pages SSR font `await load()`

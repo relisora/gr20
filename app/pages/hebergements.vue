@@ -57,6 +57,9 @@ const scanDebut = ref('')
 // après hydratation pour ne pas créer de mismatch serveur/client
 const UI_STORAGE_KEY = 'gr20-hebergements-ui-v1'
 onMounted(() => {
+  // page prérendue : au chargement direct, la dispo vient du payload figé au build. En ligne,
+  // on force un re-fetch client pour le dernier relevé ; hors ligne on garde le payload/précache.
+  if (navigator.onLine) load(true)
   const raw = localStorage.getItem(UI_STORAGE_KEY)
   if (raw) {
     try {

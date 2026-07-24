@@ -79,15 +79,14 @@ const nightDispoByDay = computed(() => {
   return map
 })
 
-// météo Open-Meteo aux points d'arrivée des journées datées dans l'horizon de prévision
+// météo Open-Meteo aux points d'arrivée de toutes les journées datées (dédupliquées) : pas de
+// filtre par fenêtre glissante, sinon l'URL (listes lat/lon) dériverait chaque jour et l'entrée
+// en cache ne serait jamais retrouvée hors ligne. meteoFor(id, date) fait déjà le tri par date.
 const { load: loadMeteo } = useMeteo()
 const meteoWaypoints = computed<Waypoint[]>(() => {
-  // « aujourd'hui » en heure de Paris : les dates renvoyées par Open-Meteo le sont (timezone imposée)
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Paris' })
-  const max = addDaysIso(today, METEO_HORIZON_JOURS - 1)
   const seen = new Map<string, Waypoint>()
   for (const day of days.value) {
-    if (day.date && day.date >= today && day.date <= max) seen.set(day.to.id, day.to)
+    if (day.date) seen.set(day.to.id, day.to)
   }
   return [...seen.values()]
 })

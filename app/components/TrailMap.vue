@@ -45,14 +45,19 @@ onMounted(async () => {
 
   const planIgn = L.tileLayer(
     'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
-    { maxZoom: 19, attribution: '© IGN — Géoplateforme' }
+    { maxZoom: 19, crossOrigin: true, attribution: '© IGN — Géoplateforme' }
   )
+  // pas de crossOrigin sur OpenTopoMap : le serveur n'envoie aucun en-tête CORS (une requête
+  // crossorigin échouerait). Couche en ligne uniquement, exclue du cache de tuiles.
   const openTopo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
     maxZoom: 17,
     attribution: '© OpenStreetMap, SRTM — © OpenTopoMap (CC-BY-SA)',
   })
+  // crossOrigin : geopf.fr et OSM renvoient Access-Control-Allow-Origin: * → réponses non opaques,
+  // taille réelle comptée dans le quota (une réponse opaque est paddée à ~7 Mo par Chrome).
   const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
+    crossOrigin: true,
     attribution: '© les contributeurs OpenStreetMap',
   })
   planIgn.addTo(map)

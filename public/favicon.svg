@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Fra li Monti — GR20">
+  <rect width="512" height="512" fill="#064e3b"/>
+  <!-- crêtes arrière -->
+  <path fill="#059669" d="M0 458 L70 180 L140 275 L215 110 L300 245 L372 160 L452 265 L512 205 L512 458 Z"/>
+  <!-- crêtes avant enneigées -->
+  <path fill="#ecfdf5" d="M0 458 L55 315 L105 358 L170 240 L215 312 L288 200 L340 298 L408 245 L462 328 L512 280 L512 458 Z"/>
+</svg>
