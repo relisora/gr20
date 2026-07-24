@@ -52,6 +52,36 @@ const { snapshot, load } = useDispo()
 await load()
 // date de début choisie pour le scan de dispo ; à défaut, plage du snapshot puis aujourd'hui
 const scanDebut = ref('')
+
+// filtres + date de scan conservés au refresh (comme le plan) ; page SSR → restauration
+// après hydratation pour ne pas créer de mismatch serveur/client
+const UI_STORAGE_KEY = 'gr20-hebergements-ui-v1'
+onMounted(() => {
+  const raw = localStorage.getItem(UI_STORAGE_KEY)
+  if (raw) {
+    try {
+      const s = JSON.parse(raw)
+      if (Array.isArray(s.typeFilter)) typeFilter.value = s.typeFilter
+      if (Array.isArray(s.formuleFilter)) formuleFilter.value = s.formuleFilter
+      if (Array.isArray(s.servicesFilter)) servicesFilter.value = s.servicesFilter
+      const today = new Date().toLocaleDateString('en-CA')
+      if (typeof s.scanDebut === 'string' && s.scanDebut >= today) scanDebut.value = s.scanDebut
+    } catch {
+      /* état corrompu → défauts */
+    }
+  }
+  watch([typeFilter, formuleFilter, servicesFilter, scanDebut], () => {
+    localStorage.setItem(
+      UI_STORAGE_KEY,
+      JSON.stringify({
+        typeFilter: typeFilter.value,
+        formuleFilter: formuleFilter.value,
+        servicesFilter: servicesFilter.value,
+        scanDebut: scanDebut.value,
+      })
+    )
+  })
+})
 const rescanRange = computed(() => {
   if (scanDebut.value) {
     const fin = addDaysIso(scanDebut.value, 13)
