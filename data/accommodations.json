@@ -18,7 +18,7 @@
       "ouverture": "mi-mai à octobre",
       "notes": "Point de départ du GR20. 30 places (7 chambres de 4 + 1 de 2), cuisine équipée, 4 douches chaudes. Hors saison : mairie 04 95 62 70 08. Joignabilité difficile signalée. Commerces au village.",
       "sources": ["https://gr20-infos.com/hebergements/gite-municipal-de-calenzana/", "https://www.gr20-blog.com/refuge-gite-etape-communal-calenzana/"],
-      "unverified": ["prix (toutes formules)"]
+      "unverified": ["prix (non publiés en ligne — « 20-30 € » le dortoir selon annuaire non daté ; à confirmer par téléphone)"]
     },
     {
       "id": "refuge-ortu-di-u-piobbu",
@@ -35,7 +35,7 @@
       "ouverture": "16 mai – 4 octobre 2026",
       "notes": "PAS DE DORTOIR : bâtiment détruit par l'incendie de mai 2019, non reconstruit en 2026. Tente louée ou bivouac uniquement ; repas et ravitaillement de base assurés. Source à ~150 m. Se remplit très vite (étape 1).",
       "sources": ["https://fr.wikipedia.org/wiki/Refuge_de_l'Ortu_di_u_Piobbu", "https://livre-gr20-corse.com/refuges-nord/refuge-ortu-di-u-piobbu", "https://gr20-infos.com/gr20-2026-les-prix/"],
-      "unverified": ["nombre de tentes louées", "capacité bivouac"]
+      "unverified": ["nombre de tentes louées et capacité bivouac (non publiés, même sur pnr-resa)"]
     },
     {
       "id": "refuge-carrozzu",
@@ -53,14 +53,14 @@
       "ouverture": "16 mai – 4 octobre 2026",
       "notes": "Très prisé, réserver tôt. Cirque de Bonifatu, pont suspendu de la Spasimata et vasques à proximité. Nombreux emplacements de tentes.",
       "sources": ["https://gr20-infos.com/refuges/carrozzu/", "https://www.treksimple.fr/gr20/guide/refuges"],
-      "unverified": ["douche chaude ou froide"]
+      "unverified": ["douche chaude ou froide (sources contradictoires : 2 chaudes + 1 froide vs froides seules)"]
     },
     {
       "id": "refuge-ascu-stagnu",
       "name": "Refuge d'Ascu Stagnu (Haut Asco)",
       "type": "refuge-pnrc",
       "waypoint": "ascu-stagnu",
-      "lat": 42.4035, "lon": 8.9225, "altitude_m": 1422,
+      "lat": 42.4035, "lon": 8.92231, "altitude_m": 1422,
       "formules": [
         { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 32, "note": "chambres de 4" },
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
@@ -71,7 +71,7 @@
       "ouverture": "16 mai – 4 octobre 2026",
       "notes": "Refuge PNRC de la station de Haut-Asco (accès D147), distinct de l'hôtel privé Le Chalet voisin. Douches chaudes, bon ravitaillement dans la station.",
       "sources": ["https://www.le-gr20.fr/en/pages/refuges/refuge-haut-asco.html", "https://livre-gr20-corse.com/refuges/station-asco-stagnu/"],
-      "unverified": ["coordonnées précises refuge vs hôtel (même station)"]
+      "unverified": []
     },
     {
       "id": "hotel-le-chalet-asco",
@@ -80,16 +80,16 @@
       "waypoint": "ascu-stagnu",
       "lat": 42.403465, "lon": 8.923206, "altitude_m": 1420,
       "formules": [
-        { "type": "dortoir", "prix_eur": null, "par": "personne" },
-        { "type": "chambre", "prix_eur": null, "par": "chambre" },
-        { "type": "demi-pension", "prix_eur": null, "par": "personne" }
+        { "type": "dortoir", "prix_eur": 20, "par": "personne", "note": "draps (couette + oreiller) en option +20 €" },
+        { "type": "chambre", "prix_eur": 115, "par": "chambre", "note": "standard 2 pers., petit-déj inclus ; triple 160 €" },
+        { "type": "demi-pension", "prix_eur": 38, "par": "personne", "note": "dîner + petit-déj buffet, en chambre comme en gîte" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "acces_route": true },
       "reservation": { "canal": "site-web", "telephone": "04 95 47 81 08", "email": "hotel.le-chalet@wanadoo.fr", "site": "https://www.hotel-lechalet-asco.com/" },
       "ouverture": "mi-mai à mi-octobre",
-      "notes": "Seul vrai hôtel sur le tracé nord. 20 chambres + gîte en dortoirs (box 4/6/8 lits) pour randonneurs. Location de draps ~10 €, laverie ~5 €. Fourchette constatée dortoir/DP 55-120 € à confirmer.",
+      "notes": "Seul vrai hôtel sur le tracé nord. 20 chambres + gîte en dortoirs (box 4/6/8 lits) pour randonneurs. Laverie ~5 €. Tarifs 2026 du site officiel.",
       "sources": ["https://www.hotel-lechalet-asco.com/fr/les-tarifs", "https://gr20-infos.com/hebergements/le-chalet-asco/"],
-      "unverified": ["prix (toutes formules)"]
+      "unverified": []
     },
     {
       "id": "refuge-tighjettu",
@@ -107,7 +107,7 @@
       "ouverture": "16 mai – 4 octobre 2026",
       "notes": "Un des plus grands refuges du GR20, sur pilotis. Douches chaudes. Bergerie de Ballone 30 min en aval. Goulot d'étranglement classique — réserver tôt.",
       "sources": ["https://gr20-infos.com/refuges/tighjettu/", "https://www.treksimple.fr/gr20/guide/refuges"],
-      "unverified": ["places dortoir : 48 vs 39 selon sources"]
+      "unverified": []
     },
     {
       "id": "bergerie-ballone",
@@ -134,16 +134,16 @@
       "waypoint": "ciottulu-di-i-mori",
       "lat": 42.33484, "lon": 8.86783, "altitude_m": 1991,
       "formules": [
-        { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 28 },
+        { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 26 },
         { "type": "bivouac", "prix_eur": 12, "par": "personne", "note": "~8 emplacements balisés" },
         { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
       "ouverture": "16 mai – 4 octobre 2026",
-      "notes": "Le plus haut du GR20 (1 991 m), au pied de la Paglia Orba. Dortoir avec matelas et couvertures (rare). Cuisine avec gaz.",
+      "notes": "Le plus haut du GR20 (1 991 m), au pied de la Paglia Orba. Dortoir avec matelas et couvertures (rare). Cuisine avec gaz. Sanitaires refaits en 2025 : 3 cabines de douche inox (chaudes).",
       "sources": ["https://livre-gr20-corse.com/refuges-nord/refuge-ciottulu-di-i-mori", "https://www.treksimple.fr/gr20/guide/refuges"],
-      "unverified": ["places dortoir : 28 vs 26", "douche : chaude vs inexistante selon sources"]
+      "unverified": []
     },
     {
       "id": "castel-di-vergio",
@@ -155,14 +155,14 @@
         { "type": "camping", "prix_eur": 7, "par": "personne" },
         { "type": "dortoir", "prix_eur": 20, "par": "personne", "note": "gîte 70 places, dortoirs 6-10 lits" },
         { "type": "demi-pension", "prix_eur": 50, "par": "personne" },
-        { "type": "chambre", "prix_eur": null, "par": "chambre" }
+        { "type": "chambre", "prix_eur": 110, "par": "chambre", "note": "double (1 lit) ; twin 120 € — saison unique 2026" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "acces_route": true },
       "reservation": { "canal": "site-web", "telephone": "04 95 48 00 01", "email": "casteldevergio@orange.fr", "site": "https://www.hotel-castel-vergio.com/" },
       "ouverture": "mai à octobre",
       "notes": "Plus haut hôtel de Corse, au col de Vergio (D84). Vrai point de ravitaillement (épicerie fournie), restaurant, bar, laverie. Nuit ici = variante du découpage officiel (qui enchaîne Ciottulu→Manganu).",
       "sources": ["https://www.hotel-castel-vergio.com/", "https://gr20-infos.com/hebergements/hotel-castel-vergio/"],
-      "unverified": ["prix chambre hôtel"]
+      "unverified": []
     },
     {
       "id": "bergerie-vaccaghja",
@@ -176,11 +176,11 @@
         { "type": "demi-pension", "prix_eur": null, "par": "personne", "note": "dîner 25 €, petit-déj 8 €" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "acces_route": false },
-      "reservation": { "canal": "telephone", "telephone": "06 38 53 60 30", "email": "donatimariec@icloud.com", "site": null },
+      "reservation": { "canal": "telephone", "telephone": "06 89 01 51 02", "email": "donatimariec@icloud.com", "site": null },
       "ouverture": "juin à septembre",
       "notes": "Sur le plateau, ~30 min avant Manganu (secteur lac de Nino). Cuisine d'été, douches chaudes, source. Épicerie fermière (fromage, charcuterie).",
       "sources": ["https://www.refuges.info/point/8307/gite-d-etape/bergerie-de-Vaccaghia/", "https://objectif-gr20.fr/refuges-gr20/la-bergerie-de-vaccaghja-etape-6-gr20/"],
-      "unverified": ["téléphone (sources divergentes : 06 38 53 60 30 / 06 89 35 97 80 / 06 89 01 51 02)"]
+      "unverified": []
     },
     {
       "id": "refuge-manganu",
@@ -189,7 +189,7 @@
       "waypoint": "manganu",
       "lat": 42.219876, "lon": 8.980447, "altitude_m": 1601,
       "formules": [
-        { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 26 },
+        { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 31 },
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
         { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
@@ -198,7 +198,7 @@
       "ouverture": "16 mai – 4 octobre 2026",
       "notes": "Au pied de la brèche de Capitellu. Douches chaudes à jeton (6 min). Pas de couvertures. GOULOT n°1 du GR20 : sature en premier, réserver dès l'ouverture des ventes.",
       "sources": ["https://gr20-infos.com/refuges/manganu/", "https://www.treksimple.fr/gr20/guide/refuges"],
-      "unverified": ["places dortoir : 26 vs 31 vs 36 — donnée contradictoire, à figer via pnr-resa"]
+      "unverified": []
     },
     {
       "id": "refuge-petra-piana",
@@ -207,7 +207,7 @@
       "waypoint": "petra-piana",
       "lat": 42.198125, "lon": 9.052298, "altitude_m": 1842,
       "formules": [
-        { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 25 },
+        { "type": "dortoir", "prix_eur": 20, "par": "personne", "places": 28 },
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
         { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
@@ -216,7 +216,7 @@
       "ouverture": "16 mai – 4 octobre 2026",
       "notes": "Premier refuge créé pour le GR20 (1971). Sanitaires rudimentaires. Petite épicerie. Départ de la variante des crêtes vers l'Onda.",
       "sources": ["https://gr20-infos.com/refuges/petra-piana/", "https://www.treksimple.fr/gr20/guide/refuges"],
-      "unverified": ["places dortoir : 25 vs 28", "douche"]
+      "unverified": ["places dortoir (28 le plus cité, mais pnr-resa ne publie pas de capacité)"]
     },
     {
       "id": "refuge-onda",
@@ -234,7 +234,7 @@
       "ouverture": "16 mai – 4 octobre 2026",
       "notes": "Grande aire de bivouac clôturée en contrebas (tentes sur palettes), gérée avec la bergerie attenante. Pas de couvertures.",
       "sources": ["https://gr20-infos.com/refuges/onda/", "https://www.treksimple.fr/gr20/guide/refuges"],
-      "unverified": ["places dortoir : 28 vs 15 — donnée contradictoire, à figer via pnr-resa"]
+      "unverified": ["places dortoir (14 à 30 selon sources ; « 15 » non corroboré — pnr-resa ne publie pas de capacité)"]
     },
     {
       "id": "bergerie-onda",
@@ -250,9 +250,9 @@
       "services": { "repas": true, "epicerie": true, "douche": true, "acces_route": false },
       "reservation": { "canal": "site-web", "telephone": null, "email": null, "site": "https://pnr-resa.corsica/" },
       "ouverture": "juin à septembre",
-      "notes": "Attenante au refuge PNRC (mêmes gérants). Repas corses réputés. CB acceptée dès 15 €. Bivouac réservé via pnr-resa. Pas de réseau.",
+      "notes": "Attenante au refuge PNRC (mêmes gérants). Repas corses réputés. CB acceptée dès 15 €. Bivouac réservé via pnr-resa. Pas de réseau. Pas de n° dédié : le 04 95 51 79 06 cité par les annuaires est la centrale PNRC.",
       "sources": ["https://objectif-gr20.fr/refuges-gr20/la-bergerie-de-onda-etape-8-gr20/", "https://www.treksimple.fr/gr20/guide/refuges"],
-      "unverified": ["téléphone"]
+      "unverified": []
     },
     {
       "id": "hotel-monte-doro",
@@ -263,39 +263,39 @@
       "formules": [
         { "type": "dortoir", "prix_eur": 29, "par": "personne", "note": "gîte en face de l'hôtel, chambres de 4" },
         { "type": "demi-pension", "prix_eur": 85, "par": "personne" },
-        { "type": "chambre", "prix_eur": null, "par": "chambre" }
+        { "type": "chambre", "prix_eur": null, "par": "chambre", "note": "hôtel : ~115-140 € constaté (triple sup.) ; simple/double non publiées" }
       ],
       "services": { "repas": true, "epicerie": false, "douche": true, "acces_route": true },
       "reservation": { "canal": "site-web", "telephone": "06 14 36 36 07", "email": "monte.oro@vizzavona.fr", "site": "https://www.monte-oro.com/" },
       "ouverture": "mai à octobre",
       "notes": "Hôtel de caractère au col de la Foce (bord T20), à ~2 km du village-gare — sur le tracé de l'étape Vizzavona→Capannelle. Gîte 29 €, 49 € avec petit-déj, DP 85 €. Restaurant réputé.",
       "sources": ["https://www.monte-oro.com/fr/tarifs", "https://gr20-infos.com/hebergements/hotel-monte-doro/"],
-      "unverified": ["prix chambre"]
+      "unverified": ["prix chambres hôtel (non publiés en ligne, moteur de résa uniquement)"]
     },
     {
       "id": "hotel-i-laricci",
-      "name": "Hôtel I Laricci (Vizzavona-gare)",
+      "name": "Hôtel Le Vizzavona, ex-I Laricci (Vizzavona-gare)",
       "type": "hotel",
       "waypoint": "vizzavona",
-      "lat": 42.127509, "lon": 9.133656, "altitude_m": 910,
+      "lat": 42.12785, "lon": 9.13385, "altitude_m": 910,
       "formules": [
-        { "type": "dortoir", "prix_eur": null, "par": "personne", "note": "dortoir 18 places" },
-        { "type": "chambre", "prix_eur": null, "par": "chambre", "note": "12 chambres, double citée ~75 €" },
-        { "type": "demi-pension", "prix_eur": null, "par": "personne" }
+        { "type": "dortoir", "prix_eur": 25, "par": "personne", "note": "dortoir « tout confort » en annexe, ~10 places" },
+        { "type": "chambre", "prix_eur": 120, "par": "chambre", "note": "chambre Charme double/twin ; 130 € juil.-août 2026" },
+        { "type": "demi-pension", "prix_eur": null, "par": "personne", "note": "pas de formule DP ; petit-déj 10 €, menu soir ~18 €" }
       ],
       "services": { "repas": true, "epicerie": false, "douche": true, "acces_route": true },
-      "reservation": { "canal": "telephone", "telephone": null, "email": null, "site": null },
+      "reservation": { "canal": "telephone", "telephone": "04 95 47 21 12", "email": null, "site": "https://www.hotel-vizzavona.com/" },
       "ouverture": "avril à octobre",
-      "notes": "Près de la gare (train Ajaccio–Bastia). Restaurant familial.",
-      "sources": ["https://gr20-infos.com/hebergements/hotel-vizzavona/"],
-      "unverified": ["téléphone", "prix (toutes formules)", "coordonnées (~150 m)"]
+      "notes": "Ex-I Laricci, repris et rénové sous le nom « Le Vizzavona ». Près de la gare (train Ajaccio–Bastia). Restaurant. Mobile 06 72 43 14 42.",
+      "sources": ["https://www.hotel-vizzavona.com/", "https://gr20-infos.com/hebergements/hotel-vizzavona/"],
+      "unverified": ["prix dortoir et repas (gr20-infos, non officiels)"]
     },
     {
       "id": "bivouac-alzarella",
       "name": "Bivouac / Refuge L'Alzarella (Vizzavona)",
       "type": "camping",
       "waypoint": "vizzavona",
-      "lat": 42.127, "lon": 9.1345, "altitude_m": 910,
+      "lat": 42.12802, "lon": 9.13268, "altitude_m": 910,
       "formules": [
         { "type": "bivouac", "prix_eur": 8, "par": "personne" },
         { "type": "tente_louee", "prix_eur": 18, "par": "personne", "note": "10 € + emplacement, matelas 5 €" },
@@ -306,7 +306,7 @@
       "ouverture": "mai à octobre",
       "notes": "40 emplacements sous les arbres à côté de la gare. Douches incluses. Épicerie corse et de première nécessité. Le « camping Savaghju » parfois cité n'existe pas : c'est ici l'offre bivouac de Vizzavona (voir aussi La Halte du Prince au col).",
       "sources": ["https://www.alzarella.com/", "https://www.gr20-blog.com/refuge-hebergement-bivouac-vizzavona/"],
-      "unverified": ["coordonnées (~150 m)"]
+      "unverified": []
     },
     {
       "id": "gite-u-fugone",
@@ -356,12 +356,12 @@
         { "type": "bivouac", "prix_eur": 12, "par": "personne" },
         { "type": "tente_louee", "prix_eur": 27, "prix_2p_eur": 39, "par": "tente", "note": "tente 2 places (matelas fournis), bivouac inclus — 27 € seul, 39 € à deux" }
       ],
-      "services": { "repas": true, "epicerie": true, "douche": true, "eau": true, "acces_route": false },
+      "services": { "repas": true, "epicerie": true, "douche": "froide", "eau": true, "acces_route": false },
       "reservation": { "canal": "pnr-resa", "site": "https://pnr-resa.corsica" },
       "ouverture": "16 mai – 4 octobre 2026",
-      "notes": "Reconstruit après 2000. Très exposé au vent (Bocca d'Oru), froid en début/fin de saison. Pas de couvertures.",
+      "notes": "Reconstruit après 2000. Très exposé au vent (Bocca d'Oru), froid en début/fin de saison. Pas de couvertures. Douche froide uniquement (retours randonneurs convergents).",
       "sources": ["https://gr20-infos.com/refuges/prati/", "https://www.treksimple.fr/gr20/guide/refuges"],
-      "unverified": ["douche chaude ou froide"]
+      "unverified": []
     },
     {
       "id": "refuge-usciolu",
@@ -408,17 +408,17 @@
       "waypoint": "matalza",
       "lat": 41.874287, "lon": 9.152372, "altitude_m": 1410,
       "formules": [
-        { "type": "dortoir", "prix_eur": null, "par": "personne", "places": 39 },
-        { "type": "bivouac", "prix_eur": null, "par": "personne" },
-        { "type": "tente_louee", "prix_eur": null, "par": "personne" },
-        { "type": "demi-pension", "prix_eur": null, "par": "personne" }
+        { "type": "dortoir", "prix_eur": 47, "par": "personne", "note": "demi-pension incluse (pas de nuitée sèche en dortoir)" },
+        { "type": "bivouac", "prix_eur": 10, "par": "personne" },
+        { "type": "tente_louee", "prix_eur": 23, "prix_2p_eur": 23, "par": "tente", "note": "tente fournie 1-2 pers (~30 tentes) ; tippi avec vrai lit 50 €" },
+        { "type": "demi-pension", "prix_eur": null, "par": "personne", "note": "incluse dans la nuitée dortoir (47 €)" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "acces_route": true },
       "reservation": { "canal": "site-web", "telephone": "06 89 30 90 43", "email": null, "site": "https://refugedematalza.com/" },
       "ouverture": "mai à octobre",
       "notes": "Gîte PRIVÉ (pas PNRC, pas sur pnr-resa) malgré son nom de « refuge » — réservation directe (Julien Piazza). Nuitée officielle du découpage PNRC (étape 13). Hébergements insolites (dômes transparents), cuisine corse.",
       "sources": ["https://refugedematalza.com/", "https://gr20-infos.com/refuges/matalza/", "https://livre-gr20-corse.com/refuges-sud/refuge-matalza"],
-      "unverified": ["prix (toutes formules)", "capacité dortoir"]
+      "unverified": ["capacité dortoir (12 selon le site 2026, 39 selon d'anciennes fiches)"]
     },
     {
       "id": "bergerie-i-croci",
@@ -433,11 +433,11 @@
         { "type": "demi-pension", "prix_eur": 25, "par": "personne", "note": "petit-déj dès 5 €" }
       ],
       "services": { "repas": true, "epicerie": true, "douche": true, "acces_route": false },
-      "reservation": { "canal": "site-web", "telephone": "06 75 49 60 59", "email": "bergeriedecroci@gmail.com", "site": "https://www.gr20-croci.com/" },
+      "reservation": { "canal": "site-web", "telephone": "06 89 56 26 52", "email": "bergeriedecroci@gmail.com", "site": "https://www.gr20-croci.com/" },
       "ouverture": "juin à septembre",
       "notes": "Plateau du Cuscionu, entre Matalza et Asinau. Alternative économique majeure. Résa en ligne resa.gr20-croci.com. Douches chaudes, repas maison.",
       "sources": ["https://www.gr20-croci.com/", "https://objectif-gr20.fr/refuges-gr20/la-bergerie-de-croci-etape-14-gr20/"],
-      "unverified": ["téléphone (numéros multiples)"]
+      "unverified": []
     },
     {
       "id": "refuge-asinau",
@@ -549,23 +549,24 @@
       "name": "Hôtel San Pasquale (Conca)",
       "type": "hotel",
       "waypoint": "conca",
-      "lat": 41.737, "lon": 9.339, "altitude_m": 250,
+      "lat": 41.73675, "lon": 9.33945, "altitude_m": 250,
       "formules": [
-        { "type": "chambre", "prix_eur": null, "par": "chambre", "note": "15 chambres" },
+        { "type": "chambre", "prix_eur": 90, "par": "chambre", "note": "double ; double sup. 95 €, twin 90 €, triple 130 € — petit-déj en sus" },
+        { "type": "dortoir", "prix_eur": 30, "par": "personne" },
         { "type": "demi-pension", "prix_eur": null, "par": "personne" }
       ],
       "services": { "repas": true, "epicerie": false, "douche": true, "acces_route": true },
-      "reservation": { "canal": "telephone", "telephone": "04 95 31 13 19", "email": null, "site": "https://www.hotelsanpasquale.com/" },
+      "reservation": { "canal": "telephone", "telephone": "04 95 10 47 30", "email": null, "site": "https://www.hotelsanpasquale.com/" },
       "ouverture": "avril à octobre",
-      "notes": "Seconde option à Conca, lieu-dit Francescoli.",
-      "sources": ["https://gr20-infos.com/hebergements/hotel-san-pasquale/"],
-      "unverified": ["prix", "téléphone", "coordonnées (~300 m)"]
+      "notes": "Seconde option à Conca, lieu-dit Francescoli. Mobile 07 86 98 79 21. Attention : l'ancien n° listé (04 95 31 13 19) était en réalité celui de L'Alzarella à Vizzavona.",
+      "sources": ["https://www.hotelsanpasquale.com/", "https://gr20-infos.com/hebergements/hotel-san-pasquale/"],
+      "unverified": ["prix demi-pension (non publié)"]
     }
   ],
   "alertes": [
     "Gîte U Renosu (E Capannelle) : probablement fermé / non exploité — ne pas compter dessus.",
     "« Camping Savaghju » (Vizzavona) : n'existe pas comme établissement distinct ; l'offre bivouac de Vizzavona est L'Alzarella (+ La Halte du Prince au col).",
-    "Capacités dortoir contradictoires selon sources pour Manganu (26/31/36), l'Onda (28/15), Tighjettu (48/39), Ciottulu (28/26), Petra Piana (25/28) — à figer en consultant le tunnel pnr-resa (ce sera fait par le scan de dispo).",
-    "Hébergements non retenus faute de données vérifiées : U Mandarinu et A Casa (Calenzana), hôtel Le Vizzavona 3*, La Halte du Prince (col de Vizzavona)."
+    "Capacités dortoir figées après vérification croisée (juillet 2026) : Manganu 31, Tighjettu 48, Ciottulu 26, Petra Piana 28. Restent incertaines : l'Onda (14 à 30 selon sources) et Matalza (12 vs 39) — pnr-resa ne publie pas de capacités statiques.",
+    "Hébergements non retenus faute de données vérifiées : U Mandarinu et A Casa (Calenzana), La Halte du Prince (col de Vizzavona). L'« hôtel Le Vizzavona 3* » n'est pas un établissement distinct : c'est I Laricci renommé (fiche hotel-i-laricci)."
   ]
 }
