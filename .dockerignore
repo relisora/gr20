@@ -1,0 +1,23 @@
+# Artefacts locaux : reconstruits dans l'image (et .nuxt/.output de l'hôte
+# n'ont rien à faire dans le contexte — ils invalideraient le cache à chaque build).
+node_modules/
+.nuxt/
+.output/
+dist/
+*.log
+.DS_Store
+
+# Outillage et docs : inutiles au build, et les éditer ne doit pas invalider le cache.
+.git/
+.gitignore
+.claude/
+*.md
+opencode.json
+Dockerfile
+compose.yaml
+.dockerignore
+
+# public/data/ est volontairement CONSERVÉ dans le contexte : les tracés y sont
+# de toute façon réécrits par `npm run data:publish`, mais un éventuel
+# dispo-snapshot.json présent est ainsi embarqué dans l'image (les pages sont
+# prérendues, donc le snapshot du build est figé dans leur payload).

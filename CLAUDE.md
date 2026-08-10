@@ -41,6 +41,19 @@ node scripts/calibrate-times.mjs       # NE PAS OUBLIER : sinon les temps sont c
 npm run data:publish
 ```
 
+Docker (`Dockerfile` + `compose.yaml`, cf. README) : `docker compose up -d --build` sert le site
+buildé sur 127.0.0.1:3002. Rien d'autre n'est conteneurisé — dev et scan restent en natif. Le build
+rejoue `data:publish`, il ne dépend pas de l'état de l'hôte. Trois invariants :
+
+- **étape de build sur base glibc** : `package-lock.json` résout `@tailwindcss/oxide` et
+  `lightningcss` en variantes `-linux-x64-gnu` (alpine demanderait les musl) ;
+- **`.output/` aplati dans `/app`** : c'est ce qui fait résoudre le
+  `process.cwd()/public/data/dispo-snapshot.json` de `dispo.get.ts`. Le copier en `/app/.output` ou
+  déplacer `WORKDIR` casse `/api/dispo` en silence (404 → repli sur le snapshot statique) ;
+- **servi en HTTPS, à la racine d'une origine** (`tailscale serve`, cf. README) : un service worker
+  ne s'enregistre pas sur une IP de tailnet en clair, et `scope` / `navigateFallback` / `/_nuxt/…`
+  supposent la racine. Sinon le hors-ligne disparaît sans erreur visible.
+
 **Pas d'ESLint, pas de Prettier, pas de tests, pas de `typecheck`** (ni `vue-tsc` ni `eslint`
 installés). Ne pas inventer de commande de vérification : le contrôle se fait via `npm run build`
 et l'app en dev.

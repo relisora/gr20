@@ -12,6 +12,39 @@ npm run data:publish   # copie les tracés GeoJSON vers public/data/
 npm run dev            # http://localhost:3000
 ```
 
+## Docker
+
+```bash
+docker compose up -d --build          # http://localhost:3002
+```
+
+Sert le site buildé. Le développement et le scan de dispo restent en natif (`npm run dev`,
+`npm run data:dispo`). L'image est autonome — le build rejoue `data:publish` depuis `data/raw/` — et
+embarque les 4 pages prérendues, les tracés et le snapshot de dispo présent au moment du build.
+Le port est publié sur 127.0.0.1:3002 seulement (`PORT_HOTE` pour en changer).
+
+### Serveur + accès Tailscale
+
+Un service worker ne s'enregistre qu'en *secure context*. Servi en `http://100.x.y.z:3002`, le site
+s'affiche mais la PWA ne s'installe pas et rien n'est précaché : le hors-ligne est perdu sans erreur
+visible. D'où le HTTPS de `tailscale serve` (certificat automatique, tailnet uniquement) :
+
+```bash
+docker compose up -d --build       # écoute sur 127.0.0.1:3002
+tailscale serve --bg 3002          # → https://<machine>.<tailnet>.ts.net/
+```
+
+Si Serve est déjà pris à la racine par une autre app du serveur, lui donner un port dédié
+(`--https 8443`) plutôt qu'un `--set-path` : l'app est buildée pour la racine (`scope`,
+`navigateFallback`, `/_nuxt/…`).
+
+`public/data/` étant gitignoré, une image construite sur le serveur après un `git pull` n'a **pas**
+de snapshot de dispo (les pastilles restent vides, le reste fonctionne). Pour en avoir un :
+scanner sur le serveur, ou y transférer l'image construite depuis la machine de dev.
+
+Avant de partir, sur le tailnet : installer la PWA et parcourir `/carte` aux zooms utiles pour
+remplir le cache de tuiles. Ensuite elle se lance et se parcourt sans réseau.
+
 ## Pages
 
 - `/` — Tabloguide : 16 étapes officielles 2026 (ou 23 segments fins), distances, D+/D-,

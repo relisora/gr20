@@ -1,0 +1,14 @@
+name: fra-li-monti
+
+services:
+  app:
+    build: .
+    image: fra-li-monti:local
+    ports:
+      - "127.0.0.1:${PORT_HOTE:-3002}:3000"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
