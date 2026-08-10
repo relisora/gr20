@@ -17,6 +17,25 @@ export default defineNuxtConfig({
       ],
     },
   },
+  icon: {
+    // Icônes hors ligne. @nuxt/icon rend une icône en CSS (`<span class="iconify i-lucide:bed">` +
+    // masque SVG injecté dans un <style>) : le SVG doit donc être disponible au moment du rendu.
+    // En SSR il est inliné dans l'HTML prérendu, mais tout ce qui est rendu côté client — /plan
+    // (ssr: false), les navigations internes, les icônes conditionnelles (météo, dispo, alertes) —
+    // le réclame à `/api/_nuxt_icon`, une requête réseau que le service worker ne précache pas :
+    // hors ligne, ces icônes n'apparaissent jamais. clientBundle embarque les SVG dans le bundle JS,
+    // lui précaché. Sans ça, seules les 43 icônes par défaut de Nuxt UI (ajoutées par son hook
+    // `icon:clientBundleIcons`) survivent hors ligne, pas celles de l'app.
+    clientBundle: {
+      // scan des sources pour n'embarquer que les icônes réellement utilisées. globInclude est
+      // surchargé car les .ts ne sont PAS scannés par défaut, alors que les *_META
+      // (app/utils/format.ts, useDispo, usePlan) y déclarent la moitié des icônes de l'app.
+      scan: { globInclude: ['app/**/*.{vue,ts}'] },
+    },
+    // aucun repli sur api.iconify.design : la collection lucide est installée en local
+    // (@iconify-json/lucide), un aller-retour réseau ne ferait qu'attendre puis échouer hors ligne.
+    fallbackToApi: false,
+  },
   routeRules: {
     // rendu au build : HTML statique précachable → chargement hors ligne des 4 pages
     '/': { prerender: true },
