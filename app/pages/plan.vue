@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { Accommodation, PlanNight, Waypoint } from '~/types'
+import type { Accommodation, PlanDay, PlanNight, Waypoint } from '~/types'
 
 const {
   plan, days, stopCandidates, nightWaypointIds, toggleStop, initFromOfficial, resetPlan,
-  accommodationFor, budget, bookingProgress, deadlines, seasonWarning,
+  accommodationFor, budget, bookingProgress, deadlines, seasonWarning, storageNotices, replacePlan,
+  orphanNights, placedNights, removeNight,
 } = usePlan()
 const { accommodationsByWaypoint, waypointById, googleRatingFor } = useGr20()
 
@@ -102,8 +103,57 @@ async function exportGpx() {
   }
 }
 
+// Export du tracé d'une seule journée : utile pour ne charger que l'étape du jour dans une appli
+// de rando (OsmAnd, Garmin…) plutôt que les 180 km du parcours.
+const exportingDay = ref<number | null>(null)
+async function exportDayGpx(day: PlanDay) {
+  exportingDay.value = day.index
+  try {
+    await downloadDayGpx(day)
+  } finally {
+    exportingDay.value = null
+  }
+}
+
 function confirmReset() {
   if (window.confirm('Réinitialiser tout le plan (nuitées, réservations, notes) ?')) resetPlan()
+}
+
+// Sauvegarde JSON : seul recours si le stockage du navigateur est vidé (« effacer les données de
+// site », navigation privée, changement d'appareil). Le fichier reste lisible par les versions
+// suivantes de l'app grâce aux migrations (cf. utils/planStorage.ts).
+const importInput = ref<HTMLInputElement | null>(null)
+const importError = ref<string | null>(null)
+
+async function onImportFile(e: Event) {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = '' // permet de réimporter le même fichier après correction
+  if (!file) return
+  importError.value = null
+  try {
+    const imported = parsePlanJson(await file.text())
+    const resume = `${imported.nights.length} nuitée(s)${imported.startDate ? `, départ le ${formatDateFr(imported.startDate)}` : ''}`
+    if (!window.confirm(`Remplacer le plan actuel par la sauvegarde (${resume}) ?`)) return
+    replacePlan(imported)
+  } catch (err) {
+    importError.value = err instanceof Error ? err.message : 'Fichier illisible.'
+  }
+}
+
+// Nuitées dont le lieu ne fait plus partie du tracé : jamais supprimées automatiquement, mais
+// l'utilisateur doit pouvoir les traiter — sinon elles pèsent sur le budget et l'avancement sans
+// qu'aucune carte ne les montre.
+function confirmRemoveOrphan(waypointId: string, nom: string | null) {
+  const night = plan.value.nights.find((n) => n.waypointId === waypointId)
+  const b = night?.booking
+  const detail = [b?.reference && `réf. ${b.reference}`, b?.prixPayeEur != null && `${b.prixPayeEur} € payés`, b?.notes]
+    .filter(Boolean)
+    .join(', ')
+  const libelle = nom ?? waypointId
+  if (window.confirm(`Supprimer définitivement la nuitée « ${libelle} »${detail ? ` et ses infos (${detail})` : ''} ?`)) {
+    removeNight(waypointId)
+  }
 }
 </script>
 
@@ -118,7 +168,7 @@ function confirmReset() {
           (refuges) ou en direct (privés) — ici tu traces où tu en es.
         </p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
         <UButton
           icon="i-lucide-download"
           variant="soft"
@@ -128,6 +178,24 @@ function confirmReset() {
           :disabled="days.length === 0"
           @click="exportGpx"
         />
+        <UButton
+          icon="i-lucide-save"
+          variant="soft"
+          color="neutral"
+          label="Sauvegarde JSON"
+          :disabled="plan.nights.length === 0"
+          title="Enregistre un fichier de sauvegarde du plan (nuitées, réservations, notes)"
+          @click="downloadPlanJson(plan)"
+        />
+        <UButton
+          icon="i-lucide-upload"
+          variant="soft"
+          color="neutral"
+          label="Restaurer"
+          title="Restaure un plan depuis un fichier de sauvegarde JSON"
+          @click="importInput?.click()"
+        />
+        <input ref="importInput" type="file" accept="application/json,.json" class="hidden" @change="onImportFile">
         <UButton
           v-if="plan.nights.length"
           icon="i-lucide-rotate-ccw"
@@ -139,8 +207,84 @@ function confirmReset() {
       </div>
     </div>
 
+    <UAlert
+      v-for="notice in storageNotices"
+      :key="notice.id"
+      class="mb-4"
+      icon="i-lucide-database-backup"
+      variant="subtle"
+      :color="notice.color"
+      :title="notice.title"
+      :description="notice.description"
+      :ui="{ description: 'text-xs' }"
+    />
+
+    <UAlert
+      v-if="importError"
+      class="mb-4"
+      icon="i-lucide-file-x"
+      color="error"
+      variant="subtle"
+      title="Restauration impossible"
+      :description="importError"
+      close
+      :ui="{ description: 'text-xs' }"
+      @update:open="importError = null"
+    />
+
+    <UCard
+      v-if="orphanNights.length"
+      class="mb-6"
+      :ui="{ root: 'ring-warning/40', body: 'p-4 sm:p-5' }"
+    >
+      <template #header>
+        <div class="flex items-start gap-2">
+          <UIcon name="i-lucide-map-pin-off" class="text-warning mt-0.5 size-4 shrink-0" />
+          <div>
+            <p class="font-medium">{{ orphanNights.length }} nuitée(s) hors tracé</p>
+            <p class="text-muted mt-1 text-xs">
+              Ces lieux ne font plus partie du tracé de référence (renommés, supprimés, ou passés hors
+              itinéraire). Les nuitées restent enregistrées et comptent dans le budget, mais n'apparaissent
+              dans aucune journée. À toi de décider : rien n'est supprimé automatiquement.
+            </p>
+          </div>
+        </div>
+      </template>
+      <ul class="space-y-2 text-sm">
+        <li
+          v-for="o in orphanNights"
+          :key="o.night.waypointId"
+          class="border-default flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border p-2"
+        >
+          <span class="font-medium">{{ o.nom ?? o.night.waypointId }}</span>
+          <code v-if="o.nom" class="text-muted text-xs">{{ o.night.waypointId }}</code>
+          <UBadge
+            :color="(BOOKING_STATUS_META[o.night.booking.status]?.color as any)"
+            :icon="BOOKING_STATUS_META[o.night.booking.status]?.icon"
+            variant="subtle"
+            size="sm"
+            :label="BOOKING_STATUS_META[o.night.booking.status]?.label"
+          />
+          <span v-if="o.night.booking.reference" class="text-muted text-xs">réf. {{ o.night.booking.reference }}</span>
+          <span v-if="o.night.booking.prixPayeEur != null" class="text-muted text-xs tabular-nums">
+            {{ o.night.booking.prixPayeEur }} € payés
+          </span>
+          <span v-if="o.night.booking.notes" class="text-muted text-xs italic">« {{ o.night.booking.notes }} »</span>
+          <UButton
+            class="ml-auto"
+            icon="i-lucide-trash-2"
+            size="xs"
+            variant="ghost"
+            color="error"
+            label="Supprimer"
+            @click="confirmRemoveOrphan(o.night.waypointId, o.nom)"
+          />
+        </li>
+      </ul>
+    </UCard>
+
     <UEmpty
-      v-if="plan.nights.length === 0"
+      v-if="placedNights.length === 0"
       class="py-16"
       variant="naked"
       size="lg"
@@ -235,7 +379,7 @@ function confirmReset() {
           :icon="showStopsEditor ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
           variant="ghost"
           color="neutral"
-          :label="`Modifier les nuitées (${plan.nights.length} nuits, ${days.length} jours de marche)`"
+          :label="`Modifier les nuitées (${placedNights.length} nuits, ${days.length} jours de marche)`"
         />
         <template #content>
           <div class="border-default mt-2 rounded-lg border p-4">
@@ -250,8 +394,8 @@ function confirmReset() {
                 :variant="nightWaypointIds.has(wp.id) ? 'solid' : 'outline'"
                 :color="nightWaypointIds.has(wp.id) ? 'primary' : 'neutral'"
                 :label="wp.name"
-                :disabled="nightWaypointIds.has(wp.id) && plan.nights.length === 1"
-                :title="nightWaypointIds.has(wp.id) && plan.nights.length === 1 ? 'Garde au moins une nuitée — utilise Réinitialiser pour repartir de zéro' : undefined"
+                :disabled="nightWaypointIds.has(wp.id) && placedNights.length === 1"
+                :title="nightWaypointIds.has(wp.id) && placedNights.length === 1 ? 'Garde au moins une nuitée — utilise Réinitialiser pour repartir de zéro' : undefined"
                 @click="onToggleStop(wp.id)"
               />
             </div>
@@ -273,6 +417,16 @@ function confirmReset() {
               <span class="text-success">+{{ day.d_plus_m }} m</span>
               <span class="text-error">−{{ day.d_minus_m }} m</span>
               <span class="font-medium">{{ formatHours(day.time_h) }}</span>
+              <UButton
+                icon="i-lucide-download"
+                variant="ghost"
+                color="neutral"
+                size="xs"
+                :loading="exportingDay === day.index"
+                title="Télécharger le tracé GPX de cette journée"
+                aria-label="Télécharger le tracé GPX de cette journée"
+                @click="exportDayGpx(day)"
+              />
             </div>
           </div>
 

@@ -54,7 +54,9 @@ await load()
 const scanDebut = ref('')
 
 // filtres + date de scan conservés au refresh (comme le plan) ; page SSR → restauration
-// après hydratation pour ne pas créer de mismatch serveur/client
+// après hydratation pour ne pas créer de mismatch serveur/client.
+// Clé stable : la relecture valide chaque champ indépendamment, donc ajouter/retirer un filtre ne
+// casse pas l'état enregistré — ne PAS versionner la clé (renommer = perdre l'état), cf. utils/planStorage.ts
 const UI_STORAGE_KEY = 'gr20-hebergements-ui-v1'
 onMounted(() => {
   // page prérendue : au chargement direct, la dispo vient du payload figé au build. En ligne,

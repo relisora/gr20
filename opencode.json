@@ -1,0 +1,14 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "lsp": {
+    "vue": {
+      "command": ["npx", "-y", "@vue/language-server@2", "--stdio"],
+      "extensions": [".vue"],
+      "initialization": {
+        "typescript": {
+          "tsdk": "node_modules/typescript/lib"
+        }
+      }
+    }
+  }
+}

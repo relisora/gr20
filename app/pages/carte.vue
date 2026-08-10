@@ -20,6 +20,16 @@ function onSelect(p: Point) {
   highlight.value = { lat: p.lat, lon: p.lon }
   mapRef.value?.panTo(p.lat, p.lon)
 }
+
+const exportingTrace = ref(false)
+async function exportTrace() {
+  exportingTrace.value = true
+  try {
+    await downloadTraceGpx()
+  } finally {
+    exportingTrace.value = false
+  }
+}
 </script>
 
 <template>
@@ -36,6 +46,19 @@ function onSelect(p: Point) {
       <span class="flex items-center gap-1.5">
         <span class="inline-block h-0.5 w-5" style="background:repeating-linear-gradient(90deg,#ea580c 0 4px,transparent 4px 8px)" /> Variante Incudine
       </span>
+      <ClientOnly>
+        <UButton
+          class="ml-auto"
+          icon="i-lucide-download"
+          variant="soft"
+          color="neutral"
+          size="xs"
+          label="GPX du parcours"
+          title="Télécharger le tracé complet Calenzana → Conca"
+          :loading="exportingTrace"
+          @click="exportTrace"
+        />
+      </ClientOnly>
     </div>
     <ClientOnly>
       <div class="h-[55vh] min-h-0 lg:h-auto lg:flex-1">
