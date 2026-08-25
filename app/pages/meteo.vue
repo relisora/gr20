@@ -86,17 +86,22 @@ watch(
 
 function tooltipHeure(h: MeteoHeure): string {
   const parts = [
-    `${meteoCodeMeta(h.code).label} à ${h.altitudeM} m`,
+    `${h.heure} h — ${meteoCodeMeta(h.code).label} à ${h.altitudeM} m`,
     h.precipMm > 0 ? `${h.precipMm} mm${h.precipProbPct != null ? ` (${h.precipProbPct} %)` : ''}` : 'pas de pluie',
-    `vent ${h.ventKmh} km/h, rafales ${h.rafalesKmh}`,
     h.enMarche ? 'en marche (position estimée)' : 'au refuge/à l’étape',
   ]
   return parts.join(' · ')
 }
+
+// une cellule par heure : fond teinté pendant la marche pour lire la fenêtre d'exposition
+function celluleHeure(h: MeteoHeure): string {
+  return `px-1 py-0.5 text-center tabular-nums ${h.enMarche ? 'bg-primary/10' : ''}`
+}
 </script>
 
 <template>
-  <UContainer class="py-8">
+  <!-- conteneur élargi : le météogramme de 24 colonnes tient d'un coup d'œil sur desktop -->
+  <UContainer class="max-w-[96rem] py-8">
     <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold">Météo du trek</h1>
@@ -225,20 +230,58 @@ function tooltipHeure(h: MeteoHeure): string {
                 Heure par heure, à ta position estimée (départ {{ plan.heureDepart }}) — les heures de marche sont surlignées.
               </p>
               <div class="overflow-x-auto pb-1">
-                <div class="flex min-w-max gap-1">
-                  <UTooltip v-for="h in heuresPour(l.day.date)!" :key="h.heure" :text="tooltipHeure(h)">
-                    <div
-                      class="flex w-14 shrink-0 flex-col items-center gap-0.5 rounded-md py-1.5 text-xs"
-                      :class="h.enMarche ? 'bg-primary/10' : ''"
-                    >
-                      <span class="text-muted">{{ h.heure }} h</span>
-                      <UIcon :name="meteoCodeMeta(h.code).icon" class="size-4" :class="h.enMarche ? 'text-primary' : 'text-muted'" />
-                      <span class="font-medium tabular-nums">{{ h.tC }}°</span>
-                      <span class="text-info tabular-nums text-xs">{{ h.precipMm > 0 ? `${h.precipMm} mm` : ' ' }}</span>
-                      <span class="text-muted tabular-nums text-xs">{{ h.altitudeM }} m</span>
-                    </div>
-                  </UTooltip>
-                </div>
+                <table class="w-full min-w-max border-collapse text-xs">
+                  <thead>
+                    <tr>
+                      <th class="bg-default sticky left-0 pr-2 text-left font-normal"></th>
+                      <th v-for="h in heuresPour(l.day.date)!" :key="h.heure" class="text-muted min-w-9 font-normal" :class="celluleHeure(h)">
+                        {{ h.heure }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th class="bg-default text-muted sticky left-0 pr-2 text-left font-normal">Ciel</th>
+                      <td v-for="h in heuresPour(l.day.date)!" :key="h.heure" :class="celluleHeure(h)" :title="tooltipHeure(h)">
+                        <UIcon :name="meteoCodeMeta(h.code).icon" class="size-4" :class="h.enMarche ? 'text-primary' : 'text-muted'" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="bg-default text-muted sticky left-0 pr-2 text-left font-normal">T° (°C)</th>
+                      <td v-for="h in heuresPour(l.day.date)!" :key="h.heure" class="font-medium" :class="celluleHeure(h)">{{ h.tC }}</td>
+                    </tr>
+                    <tr>
+                      <th class="bg-default text-muted sticky left-0 pr-2 text-left font-normal">Pluie (mm)</th>
+                      <td v-for="h in heuresPour(l.day.date)!" :key="h.heure" class="text-info" :class="celluleHeure(h)">
+                        {{ h.precipMm > 0 ? h.precipMm : '·' }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="bg-default text-muted sticky left-0 pr-2 text-left font-normal">Vent (km/h)</th>
+                      <td v-for="h in heuresPour(l.day.date)!" :key="h.heure" class="text-muted" :class="celluleHeure(h)">{{ h.ventKmh }}</td>
+                    </tr>
+                    <tr>
+                      <th class="bg-default text-muted sticky left-0 pr-2 text-left font-normal">Rafales</th>
+                      <td
+                        v-for="h in heuresPour(l.day.date)!"
+                        :key="h.heure"
+                        :class="[celluleHeure(h), h.rafalesKmh >= 60 ? 'text-error font-medium' : 'text-muted']"
+                      >
+                        {{ h.rafalesKmh }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="bg-default text-muted sticky left-0 pr-2 text-left font-normal">UV</th>
+                      <td v-for="h in heuresPour(l.day.date)!" :key="h.heure" class="text-muted" :class="celluleHeure(h)">
+                        {{ h.uvIndex != null && h.uvIndex > 0 ? h.uvIndex : '·' }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="bg-default text-muted sticky left-0 pr-2 text-left font-normal">Alt. (m)</th>
+                      <td v-for="h in heuresPour(l.day.date)!" :key="h.heure" class="text-muted" :class="celluleHeure(h)">{{ h.altitudeM }}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </template>

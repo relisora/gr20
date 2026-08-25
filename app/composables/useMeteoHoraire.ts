@@ -9,6 +9,7 @@ export interface MeteoHeure {
   precipProbPct: number | null
   ventKmh: number
   rafalesKmh: number
+  uvIndex: number | null
   altitudeM: number
   enMarche: boolean
 }
@@ -21,6 +22,7 @@ interface OpenMeteoHourly {
   weather_code: number[]
   wind_speed_10m: number[]
   wind_gusts_10m: number[]
+  uv_index: (number | null)[]
 }
 
 interface PositionHeure {
@@ -127,7 +129,7 @@ export function useMeteoHoraire() {
         latitude: coords.map((c) => c.lat).join(','),
         longitude: coords.map((c) => c.lon).join(','),
         elevation: coords.map((c) => c.ele).join(','),
-        hourly: 'temperature_2m,precipitation,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m',
+        hourly: 'temperature_2m,precipitation,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m,uv_index',
         timezone: 'Europe/Paris',
         start_date: date,
         end_date: date,
@@ -149,6 +151,7 @@ export function useMeteoHoraire() {
         precipProbPct: loc.precipitation_probability[h] ?? null,
         ventKmh: Math.round(loc.wind_speed_10m[h] ?? 0),
         rafalesKmh: Math.round(loc.wind_gusts_10m[h] ?? 0),
+        uvIndex: loc.uv_index[h] != null ? Math.round(loc.uv_index[h]!) : null,
         altitudeM: Math.round(pos.ele),
         enMarche: pos.enMarche,
       })
