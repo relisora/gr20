@@ -100,20 +100,30 @@ source de vérité** pour toutes les distances/D+/temps de l'app :
 
 ### Disponibilités pnr-resa : la chaîne complète
 
-`scripts/scan-dispo.mjs` → POST HTML sur `pnr-resa.corsica/stock.php` (plafonné à 7 j par requête,
-donc itération par fenêtres, 800 ms entre requêtes, garde-fou 62 j) → parsing de la grille par
-couleur (`green`/`orange`/`darkred`) et icône (`fa-bed`/`fa-moon`/`fa-campground`) →
-`public/data/dispo-snapshot.json` (gitignoré, horodaté).
+Le cœur du scan vit dans **`shared/scan-dispo.mjs`** — JS pur, **aucun import `node:*`** (c'est ce
+qui le rend exécutable sur Cloudflare Workers ; ne pas y introduire de dépendance node) : POST HTML
+sur `pnr-resa.corsica/stock.php` (plafonné à 7 j par requête, donc itération par fenêtres, 800 ms
+entre requêtes, garde-fou 62 j), parsing de la grille par couleur (`green`/`orange`/`darkred`) et
+icône (`fa-bed`/`fa-moon`/`fa-campground`), et `scanDispo(debut, fin, log)` qui retourne le
+snapshot. Deux consommateurs :
 
-Le mapping nom pnr-resa → id d'hébergement est la table `REFUGE_IDS` du script ; les noms non
-reconnus sont remontés dans `refugesIgnores`. Le parsing **jette une erreur** si la grille ou les
-dates sont introuvables : c'est voulu (détecter un changement de structure plutôt que produire un
-snapshot vide).
+- `scripts/scan-dispo.mjs` (CLI, `npm run data:dispo`) : wrapper node qui écrit
+  `public/data/dispo-snapshot.json` (gitignoré, horodaté) — la source du snapshot embarqué au build ;
+- `server/api/rescan.post.ts` : scanne **en mémoire** et **retourne le snapshot au client** (pas
+  d'écriture disque, sauf en dev pour la parité avec le CLI, via un import dynamique de `node:fs`).
+  Fonctionne donc en prod sur Cloudflare Pages. Gardes : same-origin (403), verrou de scan (409) et
+  cooldown 60 s (429) par isolate — l'endpoint est public, on ne proxifie pas des scans en boucle.
 
-`server/api/dispo.get.ts` relit ce fichier depuis le disque — indispensable parce qu'un asset de
-`public/` n'est **pas** joignable par le `$fetch` interne pendant le prérendu, contrairement à une
-route serveur. `server/api/rescan.post.ts` relance le script (`execFile`) et refuse hors dev
-(`import.meta.dev`), avec verrou de scan unique.
+Le mapping nom pnr-resa → id d'hébergement est la table `REFUGE_IDS` du module partagé ; les noms
+non reconnus sont remontés dans `refugesIgnores`. Le parsing **jette une erreur** si la grille ou
+les dates sont introuvables : c'est voulu (détecter un changement de structure plutôt que produire
+un snapshot vide).
+
+`server/api/dispo.get.ts` relit le fichier du build depuis le disque — indispensable parce qu'un
+asset de `public/` n'est **pas** joignable par le `$fetch` interne pendant le prérendu,
+contrairement à une route serveur. Côté client, `useDispo` garde le snapshot d'un rescan dans
+localStorage (`gr20-dispo-snapshot-v1`) et retient **le plus frais** (par `scannedAt`) entre ce
+snapshot local et celui de `/api/dispo` / du fichier statique précaché.
 
 ### Sauvegarde du plan : ce qui ne doit jamais se perdre (`app/utils/planStorage.ts`)
 

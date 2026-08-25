@@ -20,14 +20,15 @@ Le site est hébergé sur Cloudflare Pages, qui satisfait d'office les deux cont
 Le build (`npm run build`) rejoue `data:publish` via `prebuild`, l'image déployée embarque donc les
 5 pages prérendues et les tracés.
 
-Deux caveats propres à un hébergement sans disque ni process natif :
+Particularités d'un hébergement sans disque :
 
+- **Le bouton « Rescanner » fonctionne en prod** : `/api/rescan` fait le scan pnr-resa en mémoire
+  (Workers) et retourne le snapshot, conservé dans le navigateur de l'appareil (localStorage).
 - **`/api/dispo` ne fonctionne pas** (la route lit `public/data/dispo-snapshot.json` sur le disque) :
-  le composable `useDispo` se replie automatiquement sur le snapshot statique précaché. Comme
-  `public/data/` est gitignoré, un build CI depuis le dépôt n'a **pas** de snapshot (pastilles
-  vides, le reste fonctionne) — scanner en local (`npm run data:dispo`) et builder/déployer depuis
-  la machine de dev pour en embarquer un.
-- Le scan de dispo et le développement restent en natif (`npm run data:dispo`, `npm run dev`).
+  `useDispo` se replie sur le snapshot statique précaché, et le dernier rescan local prend le
+  dessus s'il est plus frais. Comme `public/data/` est gitignoré, un build CI depuis le dépôt part
+  sans snapshot embarqué (pastilles vides jusqu'au premier rescan) — scanner en local
+  (`npm run data:dispo`) et déployer depuis la machine de dev pour en embarquer un.
 
 Avant de partir : installer la PWA et parcourir `/carte` aux zooms utiles pour remplir le cache de
 tuiles. Ensuite elle se lance et se parcourt sans réseau.
@@ -76,9 +77,11 @@ npm run data:dispo                                        # aujourd'hui → +13 
 node scripts/scan-dispo.mjs --debut 2026-08-10 --fin 2026-08-23
 ```
 
-Écrit `public/data/dispo-snapshot.json` (horodaté, gitignoré). En dev, le bouton « Rescanner »
-des pages hébergements/plan relance le script via `POST /api/rescan`. Usage : scan manuel,
-faible fréquence — pas de monitoring continu.
+Écrit `public/data/dispo-snapshot.json` (horodaté, gitignoré) — le snapshot embarqué au build.
+Le bouton « Rescanner » des pages hébergements/plan fait le même scan via `POST /api/rescan`
+(en mémoire, portable Cloudflare Workers) : le résultat est affiché immédiatement et conservé
+dans le navigateur de l'appareil (localStorage), le plus frais des deux gagnant à l'affichage.
+Usage : scan manuel, faible fréquence — pas de monitoring continu.
 
 ## Données
 
