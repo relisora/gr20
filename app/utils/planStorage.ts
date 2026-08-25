@@ -17,11 +17,13 @@ import { BOOKING_STATUS_META } from './format'
  *     lu par un shell plus ancien, ne doit pas perdre ses champs au prochain enregistrement).
  */
 export const PLAN_STORAGE_KEY = 'gr20-trek-plan-v1'
-export const PLAN_VERSION = 1
+export const PLAN_VERSION = 2
 
 const BACKUP_PREFIX = 'gr20-trek-plan-sauvegarde-'
 const MAX_BACKUPS = 3
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
+const HEURE = /^([01]\d|2[0-3]):[0-5]\d$/
+const HEURE_DEPART_DEFAUT = '07:00'
 
 type Raw = Record<string, unknown>
 
@@ -44,9 +46,9 @@ export function defaultPlan(): TrekPlan {
   return {
     version: PLAN_VERSION,
     startDate: null,
+    heureDepart: HEURE_DEPART_DEFAUT,
     partySize: 1,
     paceFactor: 1,
-    includeMealsInBudget: true,
     nights: [],
   }
 }
@@ -107,24 +109,21 @@ export function sanitizePlan(raw: unknown): TrekPlan {
     ...raw,
     version: PLAN_VERSION,
     startDate: typeof raw.startDate === 'string' && ISO_DATE.test(raw.startDate) ? raw.startDate : null,
+    heureDepart: typeof raw.heureDepart === 'string' && HEURE.test(raw.heureDepart) ? raw.heureDepart : HEURE_DEPART_DEFAUT,
     partySize: Math.round(clamp(raw.partySize, 1, 12, 1)),
     paceFactor: clamp(raw.paceFactor, 0.5, 2, 1),
-    includeMealsInBudget: typeof raw.includeMealsInBudget === 'boolean' ? raw.includeMealsInBudget : true,
     nights,
   } as TrekPlan
 }
 
 /**
  * Migrations de forme appliquées en chaîne : `MIGRATIONS[n]` transforme un payload version n en
- * version n+1 (et met à jour son champ `version`). Table vide aujourd'hui : seule la v1 existe.
+ * version n+1 (et met à jour son champ `version`).
  */
 const MIGRATIONS: Record<number, (p: Raw) => Raw> = {
-  // Exemple pour le jour où la forme change :
-  // 1: (p) => ({
-  //   ...p,
-  //   version: 2,
-  //   nights: (p.nights as Raw[] ?? []).map((n) => ({ ...n, repasCommandes: null })),
-  // }),
+  // v2 : ajout de l'heure de départ quotidienne (météo horaire). `includeMealsInBudget` (v1,
+  // budget supprimé) est volontairement laissé dans le payload : champ inconnu recopié sans nuire.
+  1: (p) => ({ ...p, version: 2, heureDepart: HEURE_DEPART_DEFAUT }),
 }
 
 /**

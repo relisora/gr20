@@ -12,38 +12,25 @@ npm run data:publish   # copie les tracés GeoJSON vers public/data/
 npm run dev            # http://localhost:3000
 ```
 
-## Docker
+## Hébergement (Cloudflare Pages)
 
-```bash
-docker compose up -d --build          # http://localhost:3002
-```
+Le site est hébergé sur Cloudflare Pages, qui satisfait d'office les deux contraintes de la PWA :
+**HTTPS** (un service worker ne s'enregistre qu'en *secure context*) et **racine d'une origine**
+(l'app est buildée pour la racine : `scope`, `navigateFallback`, `/_nuxt/…` — pas de sous-chemin).
+Le build (`npm run build`) rejoue `data:publish` via `prebuild`, l'image déployée embarque donc les
+5 pages prérendues et les tracés.
 
-Sert le site buildé. Le développement et le scan de dispo restent en natif (`npm run dev`,
-`npm run data:dispo`). L'image est autonome — le build rejoue `data:publish` depuis `data/raw/` — et
-embarque les 4 pages prérendues, les tracés et le snapshot de dispo présent au moment du build.
-Le port est publié sur 127.0.0.1:3002 seulement (`PORT_HOTE` pour en changer).
+Deux caveats propres à un hébergement sans disque ni process natif :
 
-### Serveur + accès Tailscale
+- **`/api/dispo` ne fonctionne pas** (la route lit `public/data/dispo-snapshot.json` sur le disque) :
+  le composable `useDispo` se replie automatiquement sur le snapshot statique précaché. Comme
+  `public/data/` est gitignoré, un build CI depuis le dépôt n'a **pas** de snapshot (pastilles
+  vides, le reste fonctionne) — scanner en local (`npm run data:dispo`) et builder/déployer depuis
+  la machine de dev pour en embarquer un.
+- Le scan de dispo et le développement restent en natif (`npm run data:dispo`, `npm run dev`).
 
-Un service worker ne s'enregistre qu'en *secure context*. Servi en `http://100.x.y.z:3002`, le site
-s'affiche mais la PWA ne s'installe pas et rien n'est précaché : le hors-ligne est perdu sans erreur
-visible. D'où le HTTPS de `tailscale serve` (certificat automatique, tailnet uniquement) :
-
-```bash
-docker compose up -d --build       # écoute sur 127.0.0.1:3002
-tailscale serve --bg 3002          # → https://<machine>.<tailnet>.ts.net/
-```
-
-Si Serve est déjà pris à la racine par une autre app du serveur, lui donner un port dédié
-(`--https 8443`) plutôt qu'un `--set-path` : l'app est buildée pour la racine (`scope`,
-`navigateFallback`, `/_nuxt/…`).
-
-`public/data/` étant gitignoré, une image construite sur le serveur après un `git pull` n'a **pas**
-de snapshot de dispo (les pastilles restent vides, le reste fonctionne). Pour en avoir un :
-scanner sur le serveur, ou y transférer l'image construite depuis la machine de dev.
-
-Avant de partir, sur le tailnet : installer la PWA et parcourir `/carte` aux zooms utiles pour
-remplir le cache de tuiles. Ensuite elle se lance et se parcourt sans réseau.
+Avant de partir : installer la PWA et parcourir `/carte` aux zooms utiles pour remplir le cache de
+tuiles. Ensuite elle se lance et se parcourt sans réseau.
 
 ## Pages
 
@@ -53,8 +40,11 @@ remplir le cache de tuiles. Ensuite elle se lance et se parcourt sans réseau.
   profil altimétrique interactif synchronisé avec la carte (survol → marqueur, clic → recentrage)
 - `/hebergements` — comparateur filtrable des 31 hébergements, tarifs 2026, contacts,
   disponibilités pnr-resa (dernier scan)
+- `/meteo` — météo du trek journée par journée (Open-Meteo, horizon 16 j) : résumé quotidien au
+  point d'arrivée et détail heure par heure à la position estimée le long de l'étape (selon
+  l'heure de départ et le rythme du plan)
 - `/plan` — plan de trek nuit par nuit (localStorage) : hébergement + formule par nuit, statut de
-  réservation, échéancier PNRC, budget, dispo pnr-resa par nuit
+  réservation, échéancier PNRC, dispo pnr-resa par nuit
 
 ## Hors ligne / PWA
 
@@ -71,7 +61,7 @@ quasi nulle).
   uniquement.
 - **Météo** : la dernière prévision Open-Meteo consultée est conservée ~24 h ; hors réseau, l'app
   réaffiche cette prévision (périmée, mais mieux que rien) au lieu d'une erreur.
-- Les 4 pages, les tracés GeoJSON et le dernier snapshot de disponibilités sont précachés : l'app
+- Les 5 pages, les tracés GeoJSON et le dernier snapshot de disponibilités sont précachés : l'app
   se lance et se parcourt intégralement hors ligne. Hors réseau, les disponibilités affichées sont
   celles du dernier relevé connu (aucune mise à jour possible sans réseau). Un badge « Hors ligne »
   apparaît dans l'en-tête quand la connexion est perdue.
@@ -99,7 +89,7 @@ pipeline de régénération (`npm run data:trace` / `data:elevation` / `data:seg
 ## Roadmap
 
 1. ~~V0 — données + tabloguide + carte + comparateur~~
-2. ~~V1 — plan de trek nuit par nuit (localStorage), marquage des réservations, échéancier, budget, export GPX~~
+2. ~~V1 — plan de trek nuit par nuit (localStorage), marquage des réservations, échéancier, export GPX~~
 3. ~~V1.5 — scan manuel des disponibilités pnr-resa (snapshot horodaté + bouton Rescan ; simple POST
    `stock.php`, Playwright inutile)~~
 4. V2 — ~~météo par refuge (Open-Meteo, prévisions 16 j sur les nuitées du plan)~~, ~~PWA hors-ligne~~,

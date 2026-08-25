@@ -5,12 +5,7 @@ const { meteoFor } = useMeteo()
 const jour = computed(() => meteoFor(props.waypointId, props.dateIso))
 const meta = computed(() => (jour.value ? meteoCodeMeta(jour.value.code) : null))
 
-// en montagne, l'orage et le vent fort sont les vrais signaux d'alerte
-const alerte = computed(() => {
-  const j = jour.value
-  if (!j) return false
-  return j.code >= 95 || j.ventMaxKmh >= 60 || j.precipMm >= 20
-})
+const alerte = computed(() => (jour.value ? meteoAlerte(jour.value) : false))
 
 const tooltip = computed(() => {
   const j = jour.value
@@ -19,7 +14,7 @@ const tooltip = computed(() => {
     `${meta.value.label}${props.altitude ? ` à ${props.altitude} m` : ''}`,
     `${j.tMinC}° → ${j.tMaxC}°`,
     j.precipMm > 0 ? `${j.precipMm} mm${j.precipProbPct != null ? ` (${j.precipProbPct} %)` : ''}` : 'pas de pluie prévue',
-    `vent max ${j.ventMaxKmh} km/h`,
+    `vent max ${j.ventMaxKmh} km/h (rafales ${j.rafalesMaxKmh})`,
     'Prévision Open-Meteo',
   ]
   return parts.join(' · ')

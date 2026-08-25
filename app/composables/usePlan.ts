@@ -233,52 +233,6 @@ export function usePlan() {
     return acc.formules.find((f) => f.type === night.formuleType) ?? null
   }
 
-  const tarifs = pnrc.tarifs_eur as Record<string, number>
-  const mealEstimatePerNight =
-    (((tarifs.repas_soir_min ?? 18) + (tarifs.repas_soir_max ?? 28)) / 2) +
-    (((tarifs.petit_dej_min ?? 9) + (tarifs.petit_dej_max ?? 13)) / 2)
-
-  const budget = computed(() => {
-    let nuitees = 0
-    let nuiteesInconnues = 0
-    let repas = 0
-    let especes = 0
-    for (const night of plan.value.nights) {
-      const acc = accommodationFor(night)
-      const formule = formuleFor(night)
-      const party = plan.value.partySize
-      if (formule && formule.prix_eur != null) {
-        let cost: number
-        if (formule.par === 'chambre') {
-          cost = formule.prix_eur
-        } else if (formule.par === 'tente') {
-          // tentes 2 places facturées à la tente selon occupation (CGV PNRC : 27 € seul, 39 € à deux)
-          const prixDeux = formule.prix_2p_eur ?? formule.prix_eur
-          cost = Math.floor(party / 2) * prixDeux + (party % 2) * formule.prix_eur
-        } else {
-          cost = formule.prix_eur * party
-        }
-        nuitees += cost
-        if (acc && acc.reservation.canal !== 'pnr-resa') especes += cost
-      } else if (night.accommodationId) {
-        nuiteesInconnues++
-      }
-      const isDp = night.formuleType === 'demi-pension'
-      if (plan.value.includeMealsInBudget && !isDp && acc?.services.repas) {
-        const meals = mealEstimatePerNight * party
-        repas += meals
-        especes += meals
-      }
-    }
-    return {
-      nuitees: Math.round(nuitees),
-      nuiteesInconnues,
-      repas: Math.round(repas),
-      especes: Math.round(especes),
-      total: Math.round(nuitees + repas),
-    }
-  })
-
   const bookingProgress = computed(() => {
     const total = plan.value.nights.length
     const reserved = plan.value.nights.filter((n) => n.booking.status === 'reserve').length
@@ -384,8 +338,8 @@ export function usePlan() {
       })
     }
     // Les orphelines ne sont PAS listées ici : elles ont leur propre bloc dans /plan, avec leurs
-    // infos de réservation visibles et un bouton de suppression explicite (les compter dans le
-    // budget et l'avancement sans jamais les montrer serait un piège).
+    // infos de réservation visibles et un bouton de suppression explicite (les compter dans
+    // l'avancement des réservations sans jamais les montrer serait un piège).
     if (staleChoices.value.length) {
       out.push({
         id: 'obsoletes',
@@ -409,11 +363,9 @@ export function usePlan() {
     removeNight,
     accommodationFor,
     formuleFor,
-    budget,
     bookingProgress,
     deadlines,
     seasonWarning,
-    mealEstimatePerNight,
     storageNotices,
     orphanNights,
     placedNights,

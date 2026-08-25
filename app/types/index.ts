@@ -114,11 +114,12 @@ export interface PlanNight {
 }
 
 export interface TrekPlan {
-  version: 1
+  version: number
   startDate: string | null
+  /** heure de départ quotidienne « HH:MM » — sert à estimer la position pour la météo horaire */
+  heureDepart: string
   partySize: number
   paceFactor: number
-  includeMealsInBudget: boolean
   nights: PlanNight[]
 }
 

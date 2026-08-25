@@ -9,7 +9,7 @@ messages de commit). S'y conformer.
 
 « Fra li Monti » : outil **personnel** de planification du GR20 (Nuxt 4 + Nuxt UI v4 + Leaflet).
 Pas de comptes, pas de backend, pas de base de données — les données de référence sont du **JSON
-versionné dans le repo**, le plan de l'utilisateur vit dans **localStorage**, et les 4 pages sont
+versionné dans le repo**, le plan de l'utilisateur vit dans **localStorage**, et les 5 pages sont
 prérendues pour fonctionner **hors ligne** (PWA). Le cadrage produit et les contraintes juridiques
 sont dans [BRAINSTORM.md](BRAINSTORM.md) ; la provenance des données dans [data/README.md](data/README.md).
 
@@ -20,7 +20,7 @@ npm install
 npm run data:publish     # OBLIGATOIRE après clone : copie data/raw/trace-*-elev.geojson → public/data/
                          # (public/data/ est gitignoré ; sans ça, carte et profil altimétrique sont vides)
 npm run dev              # http://localhost:3000
-npm run build            # prérend / /carte /hebergements /plan
+npm run build            # prérend / /carte /hebergements /meteo /plan (prebuild rejoue data:publish)
 npm run preview
 ```
 
@@ -41,18 +41,15 @@ node scripts/calibrate-times.mjs       # NE PAS OUBLIER : sinon les temps sont c
 npm run data:publish
 ```
 
-Docker (`Dockerfile` + `compose.yaml`, cf. README) : `docker compose up -d --build` sert le site
-buildé sur 127.0.0.1:3002. Rien d'autre n'est conteneurisé — dev et scan restent en natif. Le build
-rejoue `data:publish`, il ne dépend pas de l'état de l'hôte. Trois invariants :
+Hébergement : **Cloudflare Pages** (cf. README). Deux invariants quel que soit l'hébergeur :
 
-- **étape de build sur base glibc** : `package-lock.json` résout `@tailwindcss/oxide` et
-  `lightningcss` en variantes `-linux-x64-gnu` (alpine demanderait les musl) ;
-- **`.output/` aplati dans `/app`** : c'est ce qui fait résoudre le
-  `process.cwd()/public/data/dispo-snapshot.json` de `dispo.get.ts`. Le copier en `/app/.output` ou
-  déplacer `WORKDIR` casse `/api/dispo` en silence (404 → repli sur le snapshot statique) ;
-- **servi en HTTPS, à la racine d'une origine** (`tailscale serve`, cf. README) : un service worker
-  ne s'enregistre pas sur une IP de tailnet en clair, et `scope` / `navigateFallback` / `/_nuxt/…`
-  supposent la racine. Sinon le hors-ligne disparaît sans erreur visible.
+- **servi en HTTPS, à la racine d'une origine** : un service worker ne s'enregistre pas en clair,
+  et `scope` / `navigateFallback` / `/_nuxt/…` supposent la racine (pas de sous-chemin). Sinon le
+  hors-ligne disparaît sans erreur visible ;
+- **`/api/dispo` a besoin d'un disque** (`process.cwd()/public/data/dispo-snapshot.json`) : sur un
+  hébergement sans filesystem (Pages/Workers), la route échoue et `useDispo` se replie sur le
+  snapshot statique précaché — comportement prévu, ne pas « corriger ». `public/data/` étant
+  gitignoré, un build CI n'embarque aucun snapshot (pastilles vides).
 
 **Pas d'ESLint, pas de Prettier, pas de tests, pas de `typecheck`** (ni `vue-tsc` ni `eslint`
 installés). Ne pas inventer de commande de vérification : le contrôle se fait via `npm run build`
@@ -84,12 +81,20 @@ source de vérité** pour toutes les distances/D+/temps de l'app :
 - **`usePlan`** — plan de trek : `useState` + persistance localStorage déléguée à
   `app/utils/planStorage.ts` (cf. « Sauvegarde du plan » plus bas). `days` recompose les journées à
   partir des nuitées choisies (départ et arrivée sont implicites, jamais des nuitées). Contient aussi
-  budget, échéancier PNRC, alerte de saison et `storageNotices` (état de la sauvegarde à afficher).
+  l'échéancier PNRC, l'alerte de saison et `storageNotices` (état de la sauvegarde à afficher).
 - **`useDispo`** — snapshot de dispo : `$fetch('/api/dispo')`, repli sur `/data/dispo-snapshot.json`
   (précaché) si l'API est injoignable. `DISPO_LEVEL_META` est la légende partagée.
 - **`useMeteo`** — Open-Meteo : **une seule requête multi-points** (lat/lon/elevation joints par
   virgules) pour tous les waypoints du plan, TTL 1 h **par waypoint**, déduplication de la requête
-  en vol. Réponse = objet si 1 point, tableau si N.
+  en vol. Réponse = objet si 1 point, tableau si N. La liste de points est identique entre `/plan`
+  et `/meteo` (arrivées de toutes les journées datées, sans fenêtre glissante) : même URL → même
+  entrée de cache service worker.
+- **`useMeteoHoraire`** — météo heure par heure de `/meteo` : estime la position du randonneur à
+  chaque heure pleine (temps calibrés des segments × `paceFactor`, interpolation dans les indices
+  `segment.trace.start/end` du tracé), puis **une requête Open-Meteo `hourly` par journée datée à
+  venir dans l'horizon** (`start_date = end_date`, multi-points dédupliqués, lat/lon arrondis à
+  4 décimales pour des URLs stables → retrouvées dans le cache SW hors ligne). TTL 1 h + clé de
+  plan (heure de départ, rythme, étape) pour refetcher quand le plan change.
 - **`useTrace`** — 8 866 points du tracé principal, chargés une fois (promesse partagée entre
   `TrailMap` et `ElevationProfile`), stockés en `markRaw` (jamais mutés, réactivité profonde inutile).
 
@@ -160,8 +165,8 @@ montants payés, notes) et il n'existe qu'en localStorage. Tout le code de persi
   l'appartenance à `waypoint_order`, pas à `waypointById`. Les hébergements/formules disparus sont
   signalés par `staleChoices`. Ne jamais supprimer automatiquement ces nuitées : les infos de résa
   qu'elles portent ne sont pas récupérables — `/plan` les affiche avec leurs références et montants et
-  ne propose que des suppressions explicites (elles restent comptées dans le budget et l'avancement,
-  donc les cacher serait un piège). L'état vide et la garde « garde au moins une nuitée » se basent sur
+  ne propose que des suppressions explicites (elles restent comptées dans l'avancement des
+  réservations, donc les cacher serait un piège). L'état vide et la garde « garde au moins une nuitée » se basent sur
   `placedNights`, sinon un plan entièrement orphelin n'offre ni nuitée éditable ni bouton d'amorçage.
 - **Sauvegarde hors navigateur** : `downloadPlanJson` / `parsePlanJson` (boutons « Sauvegarde JSON » et
   « Restaurer » de `/plan`) — seul recours si le stockage est vidé ou l'appareil perdu. Le fichier porte
@@ -172,8 +177,8 @@ montants payés, notes) et il n'existe qu'en localStorage. Tout le code de persi
 Le hors-ligne n'est pas un bonus : la couverture réseau est quasi nulle sur le sentier. Les choix
 sont fragiles et documentés en commentaire dans `nuxt.config.ts` — les lire avant d'y toucher :
 
-- Les 3 pages SSR sont `prerender: true` (HTML précachable) ; `/plan` est `ssr: false` **et**
-  prérendue (le plan vit dans localStorage → aucun risque d'hydratation).
+- Les 3 pages SSR sont `prerender: true` (HTML précachable) ; `/plan` et `/meteo` sont `ssr: false`
+  **et** prérendues (le plan vit dans localStorage → aucun risque d'hydratation).
 - `globPatterns` inclut `data/**/*.{json,geojson}` : tracés et dernier snapshot de dispo sont précachés.
 - Tuiles : **Plan IGN et OSM seulement** (en-tête CORS `*` → réponses non opaques, taille réelle
   comptée dans le quota ; les couches Leaflet correspondantes portent `crossOrigin: true`).
@@ -201,7 +206,7 @@ Leaflet est importé dans `TrailMap.vue`, toujours monté sous `<ClientOnly>`.
 - **localStorage sur page SSR** : restaurer dans `onMounted` (cf. `hebergements.vue`), jamais dans
   le setup, sinon mismatch d'hydratation. `/plan` est `ssr: false` et échappe à cette contrainte.
 - **Tarifs des tentes PNRC** : facturées **à la tente** (2 places), pas à la personne —
-  `formule.par === 'tente'` avec `prix_2p_eur`. Le calcul de budget en dépend.
+  `formule.par === 'tente'` avec `prix_2p_eur`.
 - **Données volatiles** : tarifs, notes Google (`google-ratings.json`, `releveLe`), téléphones et
   ouvertures se re-vérifient chaque saison. `accommodations.json` porte `sources[]` et
   `unverified[]` par hébergement — les renseigner en cas de modification.

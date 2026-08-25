@@ -8,6 +8,8 @@ export interface MeteoJour {
   precipMm: number
   precipProbPct: number | null
   ventMaxKmh: number
+  rafalesMaxKmh: number
+  uvMax: number | null
 }
 
 /** horizon de prévision Open-Meteo (aujourd'hui inclus) */
@@ -30,6 +32,11 @@ export function meteoCodeMeta(code: number) {
   return METEO_CODE_META.find((m) => m.codes.includes(code)) ?? { icon: 'i-lucide-cloud', label: `Code ${code}` }
 }
 
+// en montagne, l'orage et le vent fort sont les vrais signaux d'alerte
+export function meteoAlerte(j: MeteoJour): boolean {
+  return j.code >= 95 || j.ventMaxKmh >= 60 || j.rafalesMaxKmh >= 80 || j.precipMm >= 20
+}
+
 interface OpenMeteoDaily {
   time: string[]
   weather_code: number[]
@@ -38,6 +45,8 @@ interface OpenMeteoDaily {
   precipitation_sum: number[]
   precipitation_probability_max: (number | null)[]
   wind_speed_10m_max: number[]
+  wind_gusts_10m_max: number[]
+  uv_index_max: (number | null)[]
 }
 
 const TTL_MS = 60 * 60 * 1000 // les prévisions bougent lentement, 1 h suffit
@@ -60,7 +69,7 @@ export function useMeteo() {
           latitude: targets.map((w) => w.lat).join(','),
           longitude: targets.map((w) => w.lon).join(','),
           elevation: targets.map((w) => w.altitude_m).join(','),
-          daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max',
+          daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,uv_index_max',
           timezone: 'Europe/Paris',
           forecast_days: METEO_HORIZON_JOURS,
         },
@@ -79,6 +88,8 @@ export function useMeteo() {
           precipMm: Math.round((r.daily.precipitation_sum[j] ?? 0) * 10) / 10,
           precipProbPct: r.daily.precipitation_probability_max[j] ?? null,
           ventMaxKmh: Math.round(r.daily.wind_speed_10m_max[j] ?? 0),
+          rafalesMaxKmh: Math.round(r.daily.wind_gusts_10m_max[j] ?? 0),
+          uvMax: r.daily.uv_index_max[j] != null ? Math.round(r.daily.uv_index_max[j]! * 10) / 10 : null,
         }))
         fetchedAtParWp.value[wp.id] = Date.now()
       }
@@ -117,5 +128,11 @@ export function useMeteo() {
     return parWaypoint.value[waypointId]?.find((j) => j.date === dateIso) ?? null
   }
 
-  return { load, meteoFor, loading, error }
+  // horodatage du dernier fetch réussi (le plus récent, tous waypoints confondus)
+  const derniereMajMs = computed(() => {
+    const ts = Object.values(fetchedAtParWp.value)
+    return ts.length ? Math.max(...ts) : null
+  })
+
+  return { load, meteoFor, loading, error, derniereMajMs }
 }

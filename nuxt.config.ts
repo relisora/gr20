@@ -43,6 +43,8 @@ export default defineNuxtConfig({
     '/hebergements': { prerender: true },
     // le plan vit dans localStorage : rendu client uniquement (pas d'hydratation à risque)
     '/plan': { ssr: false, prerender: true },
+    // même contrainte : la page météo lit le plan (localStorage) et Open-Meteo côté client
+    '/meteo': { ssr: false, prerender: true },
   },
   pwa: {
     registerType: 'autoUpdate',

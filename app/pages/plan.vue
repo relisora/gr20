@@ -3,7 +3,7 @@ import type { Accommodation, PlanDay, PlanNight, Waypoint } from '~/types'
 
 const {
   plan, days, stopCandidates, nightWaypointIds, toggleStop, initFromOfficial, resetPlan,
-  accommodationFor, budget, bookingProgress, deadlines, seasonWarning, storageNotices, replacePlan,
+  accommodationFor, bookingProgress, deadlines, seasonWarning, storageNotices, replacePlan,
   orphanNights, placedNights, removeNight,
 } = usePlan()
 const { accommodationsByWaypoint, waypointById, googleRatingFor } = useGr20()
@@ -142,8 +142,8 @@ async function onImportFile(e: Event) {
 }
 
 // Nuitées dont le lieu ne fait plus partie du tracé : jamais supprimées automatiquement, mais
-// l'utilisateur doit pouvoir les traiter — sinon elles pèsent sur le budget et l'avancement sans
-// qu'aucune carte ne les montre.
+// l'utilisateur doit pouvoir les traiter — sinon elles pèsent sur l'avancement des réservations
+// sans qu'aucune carte ne les montre.
 function confirmRemoveOrphan(waypointId: string, nom: string | null) {
   const night = plan.value.nights.find((n) => n.waypointId === waypointId)
   const b = night?.booking
@@ -244,8 +244,8 @@ function confirmRemoveOrphan(waypointId: string, nom: string | null) {
             <p class="font-medium">{{ orphanNights.length }} nuitée(s) hors tracé</p>
             <p class="text-muted mt-1 text-xs">
               Ces lieux ne font plus partie du tracé de référence (renommés, supprimés, ou passés hors
-              itinéraire). Les nuitées restent enregistrées et comptent dans le budget, mais n'apparaissent
-              dans aucune journée. À toi de décider : rien n'est supprimé automatiquement.
+              itinéraire). Les nuitées restent enregistrées avec leurs infos de réservation, mais
+              n'apparaissent dans aucune journée. À toi de décider : rien n'est supprimé automatiquement.
             </p>
           </div>
         </div>
@@ -295,12 +295,15 @@ function confirmRemoveOrphan(waypointId: string, nom: string | null) {
     />
 
     <template v-else>
-      <div class="mb-6 grid gap-4 lg:grid-cols-3">
+      <div class="mb-6 grid gap-4 lg:grid-cols-2">
         <UCard>
           <template #header><span class="font-medium">Paramètres</span></template>
           <div class="space-y-4">
             <UFormField label="Date de départ (Calenzana)">
               <UInput v-model="plan.startDate" type="date" min="2020-01-01" max="2099-12-31" class="w-full" />
+            </UFormField>
+            <UFormField label="Heure de départ le matin" help="Sert à estimer ta position pour la météo horaire">
+              <UInput v-model="plan.heureDepart" type="time" class="w-full" />
             </UFormField>
             <UFormField label="Nombre de personnes">
               <UInputNumber v-model="plan.partySize" :min="1" :max="12" class="w-full" />
@@ -308,33 +311,6 @@ function confirmRemoveOrphan(waypointId: string, nom: string | null) {
             <UFormField :label="`Rythme : ${paceLabel}`">
               <USlider v-model="plan.paceFactor" :min="0.7" :max="1.4" :step="0.05" />
             </UFormField>
-            <USwitch v-model="plan.includeMealsInBudget" label="Estimer les repas dans le budget" />
-          </div>
-        </UCard>
-
-        <UCard>
-          <template #header><span class="font-medium">Budget estimé</span></template>
-          <div class="space-y-2 text-sm">
-            <div class="flex justify-between"><span>Nuitées</span><span class="font-medium tabular-nums">{{ budget.nuitees }} €</span></div>
-            <div v-if="plan.includeMealsInBudget" class="flex justify-between">
-              <span>Repas (dîner + petit-déj estimés)</span><span class="font-medium tabular-nums">{{ budget.repas }} €</span>
-            </div>
-            <USeparator />
-            <div class="flex justify-between text-base font-semibold">
-              <span>Total ({{ plan.partySize }} pers.)</span><span class="tabular-nums">{{ budget.total }} €</span>
-            </div>
-            <div class="text-muted flex justify-between text-xs">
-              <span><UIcon name="i-lucide-banknote" class="mr-1 inline size-3.5" />Espèces à prévoir</span>
-              <span class="tabular-nums">≈ {{ budget.especes }} € (pas de DAB sur le tracé)</span>
-            </div>
-            <UAlert
-              v-if="budget.nuiteesInconnues > 0"
-              icon="i-lucide-help-circle"
-              color="neutral"
-              variant="subtle"
-              :description="`${budget.nuiteesInconnues} nuitée(s) au prix inconnu — non comptées.`"
-              :ui="{ description: 'text-xs' }"
-            />
           </div>
         </UCard>
 
