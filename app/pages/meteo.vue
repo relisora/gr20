@@ -233,7 +233,7 @@ function celluleHeure(h: MeteoHeure): string {
                 <table class="w-full min-w-max border-collapse text-xs">
                   <thead>
                     <tr>
-                      <th class="bg-default sticky left-0 pr-2 text-left font-normal"></th>
+                      <th class="bg-default sticky left-0 z-10 pr-2 text-left font-normal"></th>
                       <th v-for="h in heuresPour(l.day.date)!" :key="h.heure" class="text-muted min-w-9 font-normal" :class="celluleHeure(h)">
                         {{ h.heure }}
                       </th>
@@ -241,32 +241,34 @@ function celluleHeure(h: MeteoHeure): string {
                   </thead>
                   <!-- une ligne sur deux sur fond `bg-elevated` (opaque : la colonne d'étiquettes
                        sticky doit masquer ce qui défile dessous) ; le surlignage des heures de
-                       marche (bg-primary/10, translucide) se compose par-dessus -->
+                       marche (bg-primary/10, translucide) se compose par-dessus. Le `z-10` des
+                       étiquettes est nécessaire : les icônes (masque CSS) créent un contexte
+                       d'empilement qui passerait sinon au-dessus du sticky au scroll horizontal -->
                   <tbody>
                     <tr>
-                      <th class="bg-default text-muted sticky left-0 pr-2 text-left font-normal">Ciel</th>
+                      <th class="bg-default text-muted sticky left-0 z-10 pr-2 text-left font-normal">Ciel</th>
                       <td v-for="h in heuresPour(l.day.date)!" :key="h.heure" :class="celluleHeure(h)" :title="tooltipHeure(h)">
                         <UIcon :name="meteoCodeMeta(h.code).icon" class="size-4" :class="h.enMarche ? 'text-primary' : 'text-muted'" />
                       </td>
                     </tr>
                     <tr class="bg-elevated">
-                      <th class="bg-elevated text-muted sticky left-0 pr-2 text-left font-normal">T° (°C)</th>
+                      <th class="bg-elevated text-muted sticky left-0 z-10 pr-2 text-left font-normal">T° (°C)</th>
                       <td v-for="h in heuresPour(l.day.date)!" :key="h.heure" class="text-highlighted font-medium" :class="celluleHeure(h)">
                         {{ h.tC }}
                       </td>
                     </tr>
                     <tr>
-                      <th class="bg-default text-muted sticky left-0 pr-2 text-left font-normal">Pluie (mm)</th>
+                      <th class="bg-default text-muted sticky left-0 z-10 pr-2 text-left font-normal">Pluie (mm)</th>
                       <td v-for="h in heuresPour(l.day.date)!" :key="h.heure" :class="[celluleHeure(h), h.precipMm > 0 ? 'text-info font-medium' : 'text-dimmed']">
                         {{ h.precipMm > 0 ? h.precipMm : '·' }}
                       </td>
                     </tr>
                     <tr class="bg-elevated">
-                      <th class="bg-elevated text-muted sticky left-0 pr-2 text-left font-normal">Vent (km/h)</th>
+                      <th class="bg-elevated text-muted sticky left-0 z-10 pr-2 text-left font-normal">Vent (km/h)</th>
                       <td v-for="h in heuresPour(l.day.date)!" :key="h.heure" class="text-default" :class="celluleHeure(h)">{{ h.ventKmh }}</td>
                     </tr>
                     <tr>
-                      <th class="bg-default text-muted sticky left-0 pr-2 text-left font-normal">Rafales</th>
+                      <th class="bg-default text-muted sticky left-0 z-10 pr-2 text-left font-normal">Rafales</th>
                       <td
                         v-for="h in heuresPour(l.day.date)!"
                         :key="h.heure"
@@ -276,7 +278,7 @@ function celluleHeure(h: MeteoHeure): string {
                       </td>
                     </tr>
                     <tr class="bg-elevated">
-                      <th class="bg-elevated text-muted sticky left-0 pr-2 text-left font-normal">UV</th>
+                      <th class="bg-elevated text-muted sticky left-0 z-10 pr-2 text-left font-normal">UV</th>
                       <td
                         v-for="h in heuresPour(l.day.date)!"
                         :key="h.heure"
@@ -286,7 +288,7 @@ function celluleHeure(h: MeteoHeure): string {
                       </td>
                     </tr>
                     <tr>
-                      <th class="bg-default text-muted sticky left-0 pr-2 text-left font-normal">Alt. (m)</th>
+                      <th class="bg-default text-muted sticky left-0 z-10 pr-2 text-left font-normal">Alt. (m)</th>
                       <td v-for="h in heuresPour(l.day.date)!" :key="h.heure" class="text-muted" :class="celluleHeure(h)">{{ h.altitudeM }}</td>
                     </tr>
                   </tbody>
