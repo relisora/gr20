@@ -9,6 +9,7 @@
     "node": ">=20.19.0"
   },
   "scripts": {
+    "postinstall": "nuxt prepare",
     "dev": "nuxt dev",
     "prebuild": "npm run data:publish",
     "build": "nuxt build",
