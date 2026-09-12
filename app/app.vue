@@ -39,6 +39,15 @@ onBeforeUnmount(() => {
           icon="i-lucide-wifi-off"
           label="Hors ligne"
         />
+        <UButton
+          to="https://github.com/relisora/gr20"
+          target="_blank"
+          icon="i-lucide-github"
+          color="neutral"
+          variant="ghost"
+          aria-label="Code source sur GitHub"
+          title="Code source sur GitHub"
+        />
         <UColorModeButton />
       </template>
 
@@ -68,13 +77,7 @@ onBeforeUnmount(() => {
           to="https://pnr-resa.corsica"
           target="_blank"
           class="underline"
-        >pnr-resa.corsica</ULink> ·
-        Code source sur
-        <ULink
-          to="https://github.com/relisora/gr20"
-          target="_blank"
-          class="underline"
-        >GitHub</ULink>
+        >pnr-resa.corsica</ULink>
       </p>
     </UFooter>
   </UApp>
