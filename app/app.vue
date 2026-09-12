@@ -68,7 +68,13 @@ onBeforeUnmount(() => {
           to="https://pnr-resa.corsica"
           target="_blank"
           class="underline"
-        >pnr-resa.corsica</ULink>
+        >pnr-resa.corsica</ULink> ·
+        Code source sur
+        <ULink
+          to="https://github.com/relisora/gr20"
+          target="_blank"
+          class="underline"
+        >GitHub</ULink>
       </p>
     </UFooter>
   </UApp>
