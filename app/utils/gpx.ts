@@ -1,19 +1,8 @@
-import type { PlanDay, Segment } from '~/types'
+import type { PlanDay, Segment, Waypoint } from '~/types'
 import type { TracePoint } from '~/composables/useTrace'
 
-function esc(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-}
-
-/** nom de fichier lisible : « Ortu di u Piobbu » → « ortu-di-u-piobbu » */
-function slug(s: string): string {
-  return s
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-}
+// Obligation de licence (OSM ODbL, IGN Etalab 2.0) : doit figurer dans tout fichier exporté.
+const COPYRIGHT = '© les contributeurs OpenStreetMap (ODbL) ; altitudes IGN RGE ALTI (Etalab 2.0)'
 
 interface GpxWpt {
   lat: number
@@ -22,33 +11,38 @@ interface GpxWpt {
   name: string
 }
 
-interface GpxSeg {
+interface GpxTrk {
   name: string
   points: TracePoint[]
 }
 
-// L'attribution est une obligation de licence (OSM ODbL, IGN RGE ALTI Etalab 2.0),
-// elle doit rester dans tout fichier exporté.
-const COPYRIGHT = '© les contributeurs OpenStreetMap (ODbL) ; altitudes IGN RGE ALTI (Etalab 2.0)'
+function esc(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
 
-function buildGpx(name: string, wpts: GpxWpt[], segs: GpxSeg[]): string {
+/** « Ortu di u Piobbu » → « ortu-di-u-piobbu » */
+function slug(s: string): string {
+  return s
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+function buildGpx(name: string, wpts: GpxWpt[], trks: GpxTrk[]): string {
   const wptXml = wpts
-    .map(
-      (w) =>
-        `  <wpt lat="${w.lat}" lon="${w.lon}">${w.ele != null ? `<ele>${w.ele}</ele>` : ''}<name>${esc(w.name)}</name></wpt>`,
-    )
+    .map((w) => `  <wpt lat="${w.lat}" lon="${w.lon}">${w.ele != null ? `<ele>${w.ele}</ele>` : ''}<name>${esc(w.name)}</name></wpt>`)
     .join('\n')
 
-  // un <trk> par tronçon nommé : les applis de rando (OsmAnd, Garmin…) les affichent séparément
-  const trkXml = segs
-    .map(
-      (s) => `  <trk>
-    <name>${esc(s.name)}</name>
+  // un <trk> par tronçon : les applis de rando (OsmAnd, Garmin…) les affichent séparément
+  const trkXml = trks
+    .map((t) => `  <trk>
+    <name>${esc(t.name)}</name>
     <trkseg>
-${s.points.map((p) => `      <trkpt lat="${p.lat}" lon="${p.lon}"><ele>${p.ele}</ele></trkpt>`).join('\n')}
+${t.points.map((p) => `      <trkpt lat="${p.lat}" lon="${p.lon}"><ele>${p.ele}</ele></trkpt>`).join('\n')}
     </trkseg>
-  </trk>`,
-    )
+  </trk>`)
     .join('\n')
 
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -62,90 +56,77 @@ ${trkXml}
 </gpx>`
 }
 
-function telecharger(gpx: string, fichier: string) {
-  const blob = new Blob([gpx], { type: 'application/gpx+xml' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = fichier
-  // l'ancre doit être dans le DOM (Firefox) et l'URL révoquée en différé,
-  // sinon le téléchargement peut être annulé avant de démarrer
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 1_000)
+function downloadGpx(gpx: string, filename: string) {
+  downloadBlob(new Blob([gpx], { type: 'application/gpx+xml' }), filename)
 }
 
-/**
- * Points du tracé couverts par une suite de segments consécutifs.
- * `segment.trace.start/end` sont des index dans le tableau de `useTrace` (même fichier source) ;
- * la fin d'un segment est le début du suivant, d'où le `+ 1` seulement sur le premier découpage.
- */
-function pointsDeSegments(segments: Segment[], points: TracePoint[]): TracePoint[] {
+/** Points du tracé couverts par des segments consécutifs (la fin d'un segment est le début du suivant). */
+function tracePoints(segments: Segment[], points: TracePoint[]): TracePoint[] {
   const out: TracePoint[] = []
   for (const seg of segments) {
-    const tranche = points.slice(seg.trace.start, seg.trace.end + 1)
-    out.push(...(out.length ? tranche.slice(1) : tranche))
+    const slice = points.slice(seg.trace.start, seg.trace.end + 1)
+    out.push(...(out.length ? slice.slice(1) : slice))
   }
   return out
 }
 
-function wptDuLieu(nom: string, w: { lat: number; lon: number; altitude_m: number }): GpxWpt {
-  return { lat: w.lat, lon: w.lon, ele: w.altitude_m, name: nom }
+function toWpt(name: string, w: Waypoint): GpxWpt {
+  return { lat: w.lat, lon: w.lon, ele: w.altitude_m, name }
 }
 
-/** Tracé d'une seule journée du plan (de l'étape précédente à la nuitée ou à l'arrivée). */
+function dayLabel(day: PlanDay): string {
+  return `${day.isArrival ? 'Arrivée' : 'Nuit'} : ${day.to.name}${day.date ? ` (${day.date})` : ''}`
+}
+
+/** Tracé d'une seule journée du plan. */
 export async function downloadDayGpx(day: PlanDay) {
   const { segmentsBetween } = useGr20()
   const points = await useTrace().load()
   const segments = segmentsBetween(day.from.id, day.to.id)
   if (!points.length || !segments.length) return
 
-  const titre = `GR20 jour ${day.index} — ${day.from.name} → ${day.to.name}`
-  telecharger(
+  const title = `GR20 jour ${day.index} — ${day.from.name} → ${day.to.name}`
+  downloadGpx(
     buildGpx(
-      titre,
-      [wptDuLieu(`Départ : ${day.from.name}`, day.from), wptDuLieu(`${day.isArrival ? 'Arrivée' : 'Nuit'} : ${day.to.name}${day.date ? ` (${day.date})` : ''}`, day.to)],
-      [{ name: titre, points: pointsDeSegments(segments, points) }],
+      title,
+      [toWpt(`Départ : ${day.from.name}`, day.from), toWpt(dayLabel(day), day.to)],
+      [{ name: title, points: tracePoints(segments, points) }],
     ),
     `gr20-jour-${day.index}-${slug(day.to.name)}.gpx`,
   )
 }
 
-/** Tracé complet du plan, découpé en un tronçon par journée. */
+/** Tracé complet du plan, un tronçon par journée. */
 export async function downloadPlanGpx(days: PlanDay[]) {
   const { segmentsBetween } = useGr20()
   const points = await useTrace().load()
-  if (!points.length || !days.length) return
+  const first = days[0]
+  if (!points.length || !first) return
 
-  const wpts: GpxWpt[] = []
-  const segs: GpxSeg[] = []
-  const premier = days[0]!
-  wpts.push(wptDuLieu(`Départ : ${premier.from.name}`, premier.from))
-
+  const wpts = [toWpt(`Départ : ${first.from.name}`, first.from)]
+  const trks: GpxTrk[] = []
   for (const day of days) {
-    const label = day.isArrival ? `Arrivée : ${day.to.name}` : `Nuit ${day.index} : ${day.to.name}`
-    wpts.push(wptDuLieu(`${label}${day.date ? ` (${day.date})` : ''}`, day.to))
-    const p = pointsDeSegments(segmentsBetween(day.from.id, day.to.id), points)
-    if (p.length) segs.push({ name: `Jour ${day.index} — ${day.from.name} → ${day.to.name}`, points: p })
+    wpts.push(toWpt(dayLabel(day), day.to))
+    const p = tracePoints(segmentsBetween(day.from.id, day.to.id), points)
+    if (p.length) trks.push({ name: `Jour ${day.index} — ${day.from.name} → ${day.to.name}`, points: p })
   }
 
-  telecharger(buildGpx('GR20 — plan personnel', wpts, segs), 'gr20-plan.gpx')
+  downloadGpx(buildGpx('GR20 — plan personnel', wpts, trks), 'gr20-plan.gpx')
 }
 
-/** Tracé intégral Calenzana → Conca, avec tous les lieux du référentiel en waypoints. */
+/** Tracé intégral Calenzana → Conca, tous les lieux du référentiel en waypoints. */
 export async function downloadTraceGpx() {
   const { waypoints, waypointOrder, waypointById } = useGr20()
   const points = await useTrace().load()
   if (!points.length) return
 
-  const ordonnes = waypointOrder.map((id) => waypointById.get(id)).filter((w) => w != null)
-  const hors = waypoints.filter((w) => !waypointOrder.includes(w.id))
+  const onRoute = waypointOrder.map((id) => waypointById.get(id)).filter((w) => w != null)
+  const offRoute = waypoints.filter((w) => !waypointOrder.includes(w.id))
 
-  telecharger(
+  downloadGpx(
     buildGpx(
       'GR20 — tracé complet',
-      [...ordonnes, ...hors].map((w) => wptDuLieu(w.name, w)),
+      [...onRoute, ...offRoute].map((w) => toWpt(w.name, w)),
       [{ name: 'GR20 Calenzana → Conca', points }],
     ),
     'gr20-trace-complet.gpx',

@@ -4,48 +4,38 @@ import type { TracePoint } from '~/composables/useTrace'
 const props = withDefaults(defineProps<{ height?: number }>(), { height: 200 })
 
 const emit = defineEmits<{
-  hover: [point: { lat: number; lon: number; km: number; ele: number } | null]
-  select: [point: { lat: number; lon: number; km: number; ele: number }]
+  hover: [point: TracePoint | null]
+  select: [point: TracePoint]
 }>()
 
 const { totals, waypoints } = useGr20()
 const { points, load } = useTrace()
 
-// couleurs de catégorie identiques à la légende de la carte
-const WAYPOINT_COLORS: Record<string, string> = {
-  refuge: '#059669',
-  bergerie: '#d97706',
-  village: '#4f46e5',
-  col: '#78716c',
-  station: '#0284c7',
-}
-
 const gradId = useId()
-
 const MARGIN = { top: 12, right: 14, bottom: 22, left: 44 }
 const width = ref(800)
 const wrapEl = ref<HTMLElement | null>(null)
 const svgEl = ref<SVGSVGElement | null>(null)
-let ro: ResizeObserver | null = null
+let resizeObserver: ResizeObserver | null = null
 
 onMounted(() => {
   load()
   if (wrapEl.value) {
     width.value = wrapEl.value.clientWidth || width.value
-    ro = new ResizeObserver((entries) => {
+    resizeObserver = new ResizeObserver((entries) => {
       const w = entries[0]?.contentRect.width
       if (w) width.value = w
     })
-    ro.observe(wrapEl.value)
+    resizeObserver.observe(wrapEl.value)
   }
 })
 
 onBeforeUnmount(() => {
-  ro?.disconnect()
+  resizeObserver?.disconnect()
   if (rafId) cancelAnimationFrame(rafId)
 })
 
-// sous-échantillonnage préservant min ET max de chaque bucket (les sommets/cols ne sont pas rabotés)
+/** Sous-échantillonnage qui conserve le min et le max de chaque intervalle : sommets et cols intacts. */
 function downsample(pts: TracePoint[], target = 1000): TracePoint[] {
   if (pts.length <= target) return pts
   const buckets = Math.max(1, Math.floor(target / 2))
@@ -71,14 +61,13 @@ function downsample(pts: TracePoint[], target = 1000): TracePoint[] {
   return out
 }
 
-// calculé une seule fois (ne dépend pas de la largeur → pas de recalcul au resize)
 const sampled = computed<TracePoint[]>(() => (points.value ? downsample(points.value) : []))
 
 const eleMin = computed(() => (points.value ? Math.min(...points.value.map((p) => p.ele)) : 0))
 const eleMax = computed(() => (points.value ? Math.max(...points.value.map((p) => p.ele)) : 1))
 const maxKm = computed(() => (points.value ? points.value[points.value.length - 1]!.km : 1))
 
-// domaine Y arrondi à la centaine, graduations rondes tous les 500 m
+// domaine Y arrondi à la centaine, graduations tous les 500 m
 const yMin = computed(() => Math.floor(eleMin.value / 100) * 100)
 const yMax = computed(() => Math.ceil(eleMax.value / 100) * 100)
 
@@ -106,27 +95,19 @@ function sy(ele: number): number {
   return MARGIN.top + (1 - t) * innerH.value
 }
 
-const linePath = computed(() => {
-  const pts = sampled.value
-  if (!pts.length) return ''
-  let d = ''
-  for (let i = 0; i < pts.length; i++) {
-    d += (i === 0 ? 'M' : 'L') + sx(pts[i]!.km).toFixed(1) + ' ' + sy(pts[i]!.ele).toFixed(1) + ' '
-  }
-  return d.trim()
-})
+const linePath = computed(() =>
+  sampled.value.map((p, i) => `${i === 0 ? 'M' : 'L'}${sx(p.km).toFixed(1)} ${sy(p.ele).toFixed(1)}`).join(' '),
+)
 
 const areaPath = computed(() => {
   const pts = sampled.value
   if (!pts.length) return ''
   const b = baseY.value.toFixed(1)
-  let d = 'M' + sx(pts[0]!.km).toFixed(1) + ' ' + b + ' '
-  for (const p of pts) d += 'L' + sx(p.km).toFixed(1) + ' ' + sy(p.ele).toFixed(1) + ' '
-  d += 'L' + sx(pts[pts.length - 1]!.km).toFixed(1) + ' ' + b + ' Z'
-  return d
+  const line = pts.map((p) => `L${sx(p.km).toFixed(1)} ${sy(p.ele).toFixed(1)}`).join(' ')
+  return `M${sx(pts[0]!.km).toFixed(1)} ${b} ${line} L${sx(pts[pts.length - 1]!.km).toFixed(1)} ${b} Z`
 })
 
-// km + altitude de chaque waypoint, par plus-proche-point du tracé (précalcul unique)
+/** km et altitude de chaque lieu, par plus proche point du tracé (distance équirectangulaire, suffisante ici). */
 const wpMarks = computed(() => {
   const pts = points.value
   if (!pts) return []
@@ -147,13 +128,13 @@ const wpMarks = computed(() => {
   })
 })
 
-// --- interaction : refs légères, aucun recalcul du SVG complet ---
+// interaction : refs légères, le SVG complet n'est jamais recalculé
 const cursorVisible = ref(false)
 const cursorX = ref(0)
 const cursorY = ref(0)
 const hoverKm = ref(0)
 const hoverEle = ref(0)
-const hoverWp = ref<{ name: string; altitude_m: number } | null>(null)
+const hoverWp = ref<{ name: string, altitude_m: number } | null>(null)
 
 let rafId = 0
 let pendingClientX = 0
@@ -172,15 +153,12 @@ function nearestSampled(km: number): TracePoint {
   return Math.abs(a.km - km) <= Math.abs(b.km - km) ? a : b
 }
 
-function resolve(clientX: number) {
-  const pts = sampled.value
-  if (!pts.length || !svgEl.value) return null
+function resolve(clientX: number): TracePoint | null {
+  if (!sampled.value.length || !svgEl.value) return null
   const rect = svgEl.value.getBoundingClientRect()
   const scale = rect.width ? width.value / rect.width : 1
-  let x = (clientX - rect.left) * scale
-  x = Math.max(MARGIN.left, Math.min(MARGIN.left + innerW.value, x))
-  const km = ((x - MARGIN.left) / innerW.value) * maxKm.value
-  return nearestSampled(km)
+  const x = Math.max(MARGIN.left, Math.min(MARGIN.left + innerW.value, (clientX - rect.left) * scale))
+  return nearestSampled(((x - MARGIN.left) / innerW.value) * maxKm.value)
 }
 
 function apply() {
@@ -192,8 +170,9 @@ function apply() {
   hoverEle.value = p.ele
   cursorVisible.value = true
 
+  // lieu à moins de 500 m le long du tracé
   let near: (typeof wpMarks.value)[number] | null = null
-  let nearD = 0.5 // 500 m le long du tracé
+  let nearD = 0.5
   for (const m of wpMarks.value) {
     const d = Math.abs(m.km - p.km)
     if (d < nearD) {
@@ -203,7 +182,7 @@ function apply() {
   }
   hoverWp.value = near ? { name: near.wp.name, altitude_m: near.wp.altitude_m } : null
 
-  emit('hover', { lat: p.lat, lon: p.lon, km: p.km, ele: p.ele })
+  emit('hover', p)
 }
 
 function onMove(e: PointerEvent) {
@@ -227,17 +206,14 @@ function onLeave() {
 
 function onClick(e: MouseEvent) {
   const p = resolve(e.clientX)
-  if (p) emit('select', { lat: p.lat, lon: p.lon, km: p.km, ele: p.ele })
+  if (p) emit('select', p)
 }
 
-// tooltip : reste dans le cadre (bascule à gauche du curseur passé 60 % de la largeur)
-const tipStyle = computed(() => {
-  const flip = cursorX.value > width.value * 0.6
-  return {
-    left: `${cursorX.value}px`,
-    transform: flip ? 'translateX(calc(-100% - 10px))' : 'translateX(10px)',
-  }
-})
+// l'infobulle bascule à gauche du curseur passé 60 % de la largeur
+const tipStyle = computed(() => ({
+  left: `${cursorX.value}px`,
+  transform: cursorX.value > width.value * 0.6 ? 'translateX(calc(-100% - 10px))' : 'translateX(10px)',
+}))
 
 const fmt = (n: number) => n.toLocaleString('fr-FR')
 </script>
@@ -251,7 +227,10 @@ const fmt = (n: number) => n.toLocaleString('fr-FR')
       <span>· D− {{ fmt(totals.d_minus_m) }} m</span>
     </div>
 
-    <div ref="wrapEl" class="relative w-full select-none">
+    <div
+      ref="wrapEl"
+      class="relative w-full select-none"
+    >
       <svg
         ref="svgEl"
         :viewBox="`0 0 ${width} ${props.height}`"
@@ -262,15 +241,33 @@ const fmt = (n: number) => n.toLocaleString('fr-FR')
         aria-label="Profil altimétrique du GR20"
       >
         <defs>
-          <linearGradient :id="gradId" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="currentColor" stop-opacity="0.28" class="text-primary" />
-            <stop offset="100%" stop-color="currentColor" stop-opacity="0" class="text-primary" />
+          <linearGradient
+            :id="gradId"
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1"
+          >
+            <stop
+              offset="0%"
+              stop-color="currentColor"
+              stop-opacity="0.28"
+              class="text-primary"
+            />
+            <stop
+              offset="100%"
+              stop-color="currentColor"
+              stop-opacity="0"
+              class="text-primary"
+            />
           </linearGradient>
         </defs>
 
-        <!-- axes / graduations -->
         <g class="text-muted">
-          <template v-for="t in yTicks" :key="`y${t}`">
+          <template
+            v-for="t in yTicks"
+            :key="`y${t}`"
+          >
             <line
               :x1="MARGIN.left"
               :x2="width - MARGIN.right"
@@ -279,22 +276,44 @@ const fmt = (n: number) => n.toLocaleString('fr-FR')
               stroke="currentColor"
               stroke-opacity="0.18"
             />
-            <text :x="MARGIN.left - 6" :y="sy(t) + 3" text-anchor="end" font-size="9" fill="currentColor">
+            <text
+              :x="MARGIN.left - 6"
+              :y="sy(t) + 3"
+              text-anchor="end"
+              font-size="9"
+              fill="currentColor"
+            >
               {{ t }}
             </text>
           </template>
-          <template v-for="t in xTicks" :key="`x${t}`">
-            <text :x="sx(t)" :y="props.height - 6" text-anchor="middle" font-size="9" fill="currentColor">
-              {{ t }}
-            </text>
-          </template>
-          <text :x="width - MARGIN.right" :y="props.height - 6" text-anchor="end" font-size="9" fill="currentColor" opacity="0.7">
+          <text
+            v-for="t in xTicks"
+            :key="`x${t}`"
+            :x="sx(t)"
+            :y="props.height - 6"
+            text-anchor="middle"
+            font-size="9"
+            fill="currentColor"
+          >
+            {{ t }}
+          </text>
+          <text
+            :x="width - MARGIN.right"
+            :y="props.height - 6"
+            text-anchor="end"
+            font-size="9"
+            fill="currentColor"
+            opacity="0.7"
+          >
             km
           </text>
         </g>
 
-        <!-- courbe + aplat -->
-        <path :d="areaPath" :fill="`url(#${gradId})`" class="text-primary" />
+        <path
+          :d="areaPath"
+          :fill="`url(#${gradId})`"
+          class="text-primary"
+        />
         <path
           :d="linePath"
           fill="none"
@@ -305,20 +324,21 @@ const fmt = (n: number) => n.toLocaleString('fr-FR')
           class="text-primary"
         />
 
-        <!-- waypoints -->
         <circle
           v-for="m in wpMarks"
           :key="m.wp.id"
           :cx="sx(m.km)"
           :cy="sy(m.ele)"
           r="3"
-          :fill="WAYPOINT_COLORS[m.wp.type] ?? '#333'"
+          :fill="WAYPOINT_TYPE_META[m.wp.type].hex"
           stroke="#fff"
           stroke-width="1"
         />
 
-        <!-- crosshair (piloté par refs légères) -->
-        <g v-show="cursorVisible" class="text-highlighted">
+        <g
+          v-show="cursorVisible"
+          class="text-highlighted"
+        >
           <line
             :x1="cursorX"
             :x2="cursorX"
@@ -329,10 +349,16 @@ const fmt = (n: number) => n.toLocaleString('fr-FR')
             stroke-dasharray="3 3"
             stroke-opacity="0.6"
           />
-          <circle :cx="cursorX" :cy="cursorY" r="3.5" fill="currentColor" stroke="#fff" stroke-width="1.5" />
+          <circle
+            :cx="cursorX"
+            :cy="cursorY"
+            r="3.5"
+            fill="currentColor"
+            stroke="#fff"
+            stroke-width="1.5"
+          />
         </g>
 
-        <!-- zone de capture -->
         <rect
           :x="MARGIN.left"
           :y="MARGIN.top"
@@ -356,7 +382,10 @@ const fmt = (n: number) => n.toLocaleString('fr-FR')
           <span class="font-medium">{{ hoverKm.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) }} km</span>
           <span class="text-muted"> · {{ Math.round(hoverEle) }} m</span>
         </div>
-        <div v-if="hoverWp" class="mt-0.5 text-muted">
+        <div
+          v-if="hoverWp"
+          class="mt-0.5 text-muted"
+        >
           {{ hoverWp.name }} <span class="tabular-nums">({{ hoverWp.altitude_m }} m)</span>
         </div>
       </div>

@@ -1,21 +1,24 @@
 /**
  * Cœur du scan des disponibilités pnr-resa, partagé entre le CLI (`scripts/scan-dispo.mjs`) et la
- * route serveur `/api/rescan`. Volontairement en JS pur SANS import `node:*` : le CLI l'importe
- * sans build, et nitro le bundle pour Cloudflare Workers (fetch global, URLSearchParams,
- * AbortSignal.timeout et setTimeout y existent tous).
+ * route `/api/rescan`. JS pur sans import `node:*` : le CLI l'importe sans build et nitro le bundle
+ * pour Cloudflare Workers.
  *
- * La grille https://pnr-resa.corsica/stock.php (POST date_debut/date_fin, HTML server-side) est
- * plafonnée à 7 jours par requête : on itère par fenêtres, 800 ms entre requêtes, 62 j max.
+ * La grille https://pnr-resa.corsica/stock.php (POST date_debut/date_fin, HTML) est plafonnée à
+ * 7 jours par requête : on itère par fenêtres, 800 ms entre requêtes, 62 jours max.
+ *
+ * @typedef {import('../app/types').DispoSnapshot} DispoSnapshot
+ * @typedef {import('../app/types').DispoLevel} DispoLevel
+ * @typedef {(ligne: string) => void} Log
  */
 
 export const STOCK_URL = 'https://pnr-resa.corsica/stock.php'
 const USER_AGENT = 'fra-li-monti/0.1 (outil personnel de planification GR20 ; scan manuel)'
 const WINDOW_DAYS = 7
 const DELAY_BETWEEN_REQUESTS_MS = 800
-export const MAX_DAYS = 62 // garde-fou : pas de scan massif
+export const MAX_DAYS = 62
 
-// Nom affiché par pnr-resa (normalisé) → id dans data/accommodations.json
-const REFUGE_IDS = {
+/** Nom affiché par pnr-resa (normalisé) → id dans data/accommodations.json */
+const REFUGE_IDS = /** @type {Record<string, string>} */ ({
   'site d ortu di u piobbu': 'refuge-ortu-di-u-piobbu',
   'refuge de carozzu': 'refuge-carrozzu',
   'refuge d ascu stagnu': 'refuge-ascu-stagnu',
@@ -28,24 +31,25 @@ const REFUGE_IDS = {
   'refuge d usciolu': 'refuge-usciolu',
   'site d asinau': 'refuge-asinau',
   'refuge de paliri': 'refuge-i-paliri',
-}
+})
 
-const ICON_TO_FORMULE = {
+const ICON_TO_FORMULE = /** @type {Record<string, string>} */ ({
   'fa-bed': 'dortoir',
   'fa-moon': 'bivouac',
   'fa-campground': 'tente_louee',
-}
+})
 
-const COLOR_TO_LEVEL = {
+const COLOR_TO_LEVEL = /** @type {Record<string, DispoLevel>} */ ({
   green: 'dispo', // > 5 places
   orange: 'peu', // ≤ 5 places
   darkred: 'complet',
-}
+})
 
+/** @param {string} s */
 function normalizeName(s) {
   return s
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[̀-ͯ]/g, '')
     .toLowerCase()
     .replace(/&#0?39;|['’]/g, ' ')
     .replace(/\(.*?\)/g, ' ')
@@ -53,29 +57,42 @@ function normalizeName(s) {
     .trim()
 }
 
-function isoDate(d) {
-  return d.toISOString().slice(0, 10)
-}
-
+/**
+ * @param {string} iso
+ * @param {number} n
+ */
 export function addDays(iso, n) {
   const d = new Date(iso + 'T12:00:00Z')
   d.setUTCDate(d.getUTCDate() + n)
-  return isoDate(d)
+  return d.toISOString().slice(0, 10)
 }
 
-/** Valide une plage de scan. Jette un message affichable ; retourne le nombre de jours. */
+/**
+ * @param {unknown} v
+ * @returns {v is string}
+ */
+function isIsoDate(v) {
+  return typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v + 'T12:00:00Z'))
+}
+
+/**
+ * Valide une plage de scan et la retourne typée. Jette un message affichable.
+ * @param {unknown} debut
+ * @param {unknown} fin
+ */
 export function validerPlage(debut, fin) {
-  for (const [label, v] of [['début', debut], ['fin', fin]]) {
-    if (typeof v !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v) || Number.isNaN(new Date(v + 'T12:00:00Z').getTime())) {
-      throw new Error(`Date invalide pour ${label} : ${v} (format attendu YYYY-MM-DD)`)
-    }
-  }
+  if (!isIsoDate(debut)) throw new Error(`Date invalide pour début : ${debut} (format attendu YYYY-MM-DD)`)
+  if (!isIsoDate(fin)) throw new Error(`Date invalide pour fin : ${fin} (format attendu YYYY-MM-DD)`)
   if (fin < debut) throw new Error(`La fin (${fin}) est avant le début (${debut})`)
-  const nbDays = Math.round((new Date(fin) - new Date(debut)) / 86_400_000) + 1
+  const nbDays = Math.round((Date.parse(fin) - Date.parse(debut)) / 86_400_000) + 1
   if (nbDays > MAX_DAYS) throw new Error(`Plage trop longue (${nbDays} j > ${MAX_DAYS} j max)`)
-  return nbDays
+  return { debut, fin, nbDays }
 }
 
+/**
+ * @param {string} debut
+ * @param {string} fin
+ */
 async function fetchWindow(debut, fin) {
   const res = await fetch(STOCK_URL, {
     method: 'POST',
@@ -91,61 +108,55 @@ async function fetchWindow(debut, fin) {
 }
 
 /**
- * Parse la grille : en-têtes <th>DD/MM</th>, puis par refuge une ligne
- * <tr><td rowspan='3'>Nom</td><td class='option-icon'><i class='fas fa-bed'></i></td><td style='color:X'>…
- * suivie de deux lignes (moon, campground) sans la cellule rowspan.
- * Jette si la grille ou les dates sont introuvables : détecter un changement de structure plutôt
- * que produire un snapshot vide.
+ * Parse la grille : en-têtes `<th>DD/MM</th>`, puis par refuge une ligne avec la cellule `rowspan`
+ * du nom et l'icône `fa-bed`, suivie de deux lignes (`fa-moon`, `fa-campground`) sans le nom.
+ * Jette si la grille ou les dates sont introuvables : mieux vaut détecter un changement de
+ * structure que produire un snapshot vide.
+ * @param {string} html
+ * @param {string} windowStartIso
+ * @param {Log} [log]
  */
 export function parseStockHtml(html, windowStartIso, log = () => {}) {
-  // Isole la table de la grille (celle qui contient l'en-tête Refuge)
   const tables = html.match(/<table[\s\S]*?<\/table>/gi) ?? []
   const grid = tables.find((t) => /<th[^>]*>\s*Refuge/i.test(t))
   if (!grid) throw new Error(`Grille introuvable dans la réponse ${windowStartIso} (structure changée ?)`)
 
-  // Dates des colonnes : DD/MM, année déduite de la fenêtre (gère le passage d'année)
-  const headers = [...grid.matchAll(/<th[^>]*>\s*(\d{2})\/(\d{2})\s*<\/th>/g)].map((m) => ({
-    day: m[1],
-    month: m[2],
-  }))
+  // colonnes DD/MM ; l'année est déduite de la fenêtre (passage d'année compris)
+  const headers = [...grid.matchAll(/<th[^>]*>\s*(\d{2})\/(\d{2})\s*<\/th>/g)]
   if (headers.length === 0) throw new Error(`Aucune colonne de date dans la réponse ${windowStartIso}`)
   const startYear = Number(windowStartIso.slice(0, 4))
   const startMonth = Number(windowStartIso.slice(5, 7))
-  const dates = headers.map(({ day, month }) => {
+  const dates = headers.map(([, day, month]) => {
     const year = Number(month) < startMonth ? startYear + 1 : startYear
     return `${year}-${month}-${day}`
   })
 
-  const result = {} // accId → dateIso → formule → level
+  /** @type {DispoSnapshot['dispo']} */
+  const result = {}
   const unknownNames = new Set()
+  /** @type {string | null} */
   let currentAccId = null
-  let currentKnown = false
 
   for (const [row] of grid.matchAll(/<tr>[\s\S]*?<\/tr>/g)) {
-    const nameMatch = row.match(/<td[^>]*rowspan[^>]*>([\s\S]*?)<\/td>/)
-    if (nameMatch) {
-      const rawName = nameMatch[1].replace(/<[^>]+>/g, '').trim()
-      const accId = REFUGE_IDS[normalizeName(rawName)]
-      currentAccId = accId ?? null
-      currentKnown = Boolean(accId)
-      if (!accId) unknownNames.add(rawName.replace(/&#0?39;/g, "'"))
+    const rawName = row.match(/<td[^>]*rowspan[^>]*>([\s\S]*?)<\/td>/)?.[1]
+    if (rawName != null) {
+      const name = rawName.replace(/<[^>]+>/g, '').trim()
+      currentAccId = REFUGE_IDS[normalizeName(name)] ?? null
+      if (!currentAccId) unknownNames.add(name.replace(/&#0?39;/g, '\''))
     }
 
-    const iconMatch = row.match(/option-icon[\s\S]*?fa-(bed|moon|campground)/)
-    if (!iconMatch || !currentKnown) continue
-    const formule = ICON_TO_FORMULE['fa-' + iconMatch[1]]
+    const formule = ICON_TO_FORMULE['fa-' + row.match(/option-icon[\s\S]*?fa-(bed|moon|campground)/)?.[1]]
+    if (!formule || !currentAccId) continue
 
-    const cells = [...row.matchAll(/<td[^>]*style=['"]color:\s*(green|orange|darkred)['"][^>]*>/g)]
-    if (cells.length !== dates.length) {
-      log(
-        `⚠ ${currentAccId}/${formule} : ${cells.length} cellules pour ${dates.length} dates (fenêtre ${windowStartIso}) — ligne ignorée`
-      )
+    const colors = [...row.matchAll(/<td[^>]*style=['"]color:\s*(green|orange|darkred)['"][^>]*>/g)].map((m) => m[1] ?? '')
+    if (colors.length !== dates.length) {
+      log(`⚠ ${currentAccId}/${formule} : ${colors.length} cellules pour ${dates.length} dates (fenêtre ${windowStartIso}) — ligne ignorée`)
       continue
     }
-    for (let i = 0; i < dates.length; i++) {
-      const level = COLOR_TO_LEVEL[cells[i][1]]
-      ;((result[currentAccId] ??= {})[dates[i]] ??= {})[formule] = level
-    }
+    const byDate = (result[currentAccId] ??= {})
+    dates.forEach((date, i) => {
+      (byDate[date] ??= {})[formule] = COLOR_TO_LEVEL[colors[i] ?? '']
+    })
   }
 
   if (Object.keys(result).length === 0) {
@@ -155,13 +166,18 @@ export function parseStockHtml(html, windowStartIso, log = () => {}) {
 }
 
 /**
- * Scanne la plage [debut, fin] par fenêtres de 7 j et retourne le snapshot (forme `DispoSnapshot`).
- * `log(ligne)` reçoit la progression et les avertissements (stdout côté CLI, réponse côté route).
+ * Scanne la plage [debut, fin] par fenêtres de 7 jours et retourne le snapshot.
+ * `log` reçoit la progression et les avertissements (stdout côté CLI, réponse côté route).
+ * @param {string} debut
+ * @param {string} fin
+ * @param {Log} [log]
+ * @returns {Promise<DispoSnapshot>}
  */
 export async function scanDispo(debut, fin, log = () => {}) {
   validerPlage(debut, fin)
   log(`Scan pnr-resa : ${debut} → ${fin}`)
 
+  /** @type {DispoSnapshot['dispo']} */
   const dispo = {}
   const ignored = new Set()
   const coveredDates = new Set()
@@ -172,7 +188,7 @@ export async function scanDispo(debut, fin, log = () => {}) {
     const { result, unknownNames, dates } = parseStockHtml(html, winStart, log)
     for (const [accId, byDate] of Object.entries(result)) {
       for (const [date, formules] of Object.entries(byDate)) {
-        // le serveur peut renvoyer moins de jours que demandé : on ne garde que la plage voulue
+        // le serveur peut renvoyer plus de jours que demandé
         if (date < debut || date > fin) continue
         ;(dispo[accId] ??= {})[date] = formules
         coveredDates.add(date)

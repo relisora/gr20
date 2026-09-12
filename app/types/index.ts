@@ -21,7 +21,7 @@ export interface Segment {
   terrain_factor: number
   time_h: number
   official_stage?: string
-  trace: { file: string; start: number; end: number }
+  trace: { file: string, start: number, end: number }
 }
 
 export interface Formule {
@@ -133,6 +133,7 @@ export interface PlanDay {
   d_minus_m: number
   time_h: number
   night: PlanNight | null
+  accommodation: Accommodation | null
   isArrival: boolean
 }
 

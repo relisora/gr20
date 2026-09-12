@@ -16,7 +16,7 @@ export interface MeteoJour {
 export const METEO_HORIZON_JOURS = 16
 
 /** codes météo WMO → icône + libellé (groupes utiles en montagne) */
-export const METEO_CODE_META: { codes: number[]; icon: string; label: string }[] = [
+export const METEO_CODE_META: { codes: number[], icon: string, label: string }[] = [
   { codes: [0], icon: 'i-lucide-sun', label: 'Ciel clair' },
   { codes: [1, 2], icon: 'i-lucide-cloud-sun', label: 'Peu nuageux' },
   { codes: [3], icon: 'i-lucide-cloud', label: 'Couvert' },

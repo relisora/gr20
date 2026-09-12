@@ -30,10 +30,6 @@ const segmentColumns: TableColumn<Segment>[] = [
   { accessorKey: 'ele_max_m', header: 'Alt. max' },
 ]
 
-function arrivalAccommodations(waypointId: string) {
-  return accommodationsByWaypoint.get(waypointId) ?? []
-}
-
 const stats = [
   { label: 'Distance', value: `${totals.distance_km} km`, icon: 'i-lucide-ruler' },
   { label: 'Dénivelé +', value: `${totals.d_plus_m.toLocaleString('fr-FR')} m`, icon: 'i-lucide-trending-up' },
@@ -45,7 +41,9 @@ const stats = [
 <template>
   <UContainer class="py-8">
     <div class="mb-6">
-      <h1 class="text-2xl font-bold">Tabloguide GR20</h1>
+      <h1 class="text-2xl font-bold">
+        Tabloguide GR20
+      </h1>
       <p class="text-muted mt-1 text-sm">
         Calenzana → Conca · découpage officiel PNRC 2026 · temps calibrés sur les temps officiels,
         calculés depuis le tracé OSM et les altitudes IGN.
@@ -65,15 +63,27 @@ const stats = [
     </UPageGrid>
 
     <div class="mb-4 flex items-center justify-between gap-4">
-      <UTabs v-model="view" :items="viewItems" :content="false" size="sm" />
+      <UTabs
+        v-model="view"
+        :items="viewItems"
+        :content="false"
+        size="sm"
+      />
     </div>
 
-    <UTable v-if="view === 'etapes'" :data="stageRows" :columns="stageColumns">
+    <UTable
+      v-if="view === 'etapes'"
+      :data="stageRows"
+      :columns="stageColumns"
+    >
       <template #etape-cell="{ row }">
         <div class="flex flex-col">
           <span class="font-medium">{{ row.original.from.name }} → {{ row.original.to.name }}</span>
-          <span v-if="row.original.segments.length > 1" class="text-muted text-xs">
-            via {{ row.original.segments.slice(0, -1).map(s => waypointById.get(s.to)?.name).join(', ') }}
+          <span
+            v-if="row.original.segments.length > 1"
+            class="text-muted text-xs"
+          >
+            via {{ row.original.segments.slice(0, -1).map((s) => waypointById.get(s.to)?.name).join(', ') }}
           </span>
         </div>
       </template>
@@ -95,23 +105,27 @@ const stats = [
       <template #hebergements-cell="{ row }">
         <div class="flex flex-wrap gap-1">
           <UTooltip
-            v-for="acc in arrivalAccommodations(row.original.to.id)"
+            v-for="acc in accommodationsByWaypoint.get(row.original.to.id) ?? []"
             :key="acc.id"
             :text="acc.name"
           >
             <UBadge
-              :icon="ACCOMMODATION_TYPE_META[acc.type]?.icon"
-              :color="(ACCOMMODATION_TYPE_META[acc.type]?.color as any) ?? 'neutral'"
+              :icon="ACCOMMODATION_TYPE_META[acc.type].icon"
+              :color="ACCOMMODATION_TYPE_META[acc.type].color"
               variant="subtle"
               size="sm"
-              :label="ACCOMMODATION_TYPE_META[acc.type]?.label"
+              :label="ACCOMMODATION_TYPE_META[acc.type].label"
             />
           </UTooltip>
         </div>
       </template>
     </UTable>
 
-    <UTable v-else :data="segments" :columns="segmentColumns">
+    <UTable
+      v-else
+      :data="segments"
+      :columns="segmentColumns"
+    >
       <template #segment-cell="{ row }">
         <span class="font-medium">
           {{ waypointById.get(row.original.from)?.name }} → {{ waypointById.get(row.original.to)?.name }}

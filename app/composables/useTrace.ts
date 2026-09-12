@@ -1,60 +1,48 @@
+import { haversineM } from '#shared/geo.mjs'
+
 export interface TracePoint {
   lat: number
   lon: number
   ele: number
-  /** distance cumulée depuis le départ, en km (haversine) */
+  /** distance cumulée depuis Calenzana, en km */
   km: number
 }
 
-const R = 6_371_000 // rayon terrestre moyen, m
+// promesse partagée : TrailMap et ElevationProfile demandent le tracé en même temps
+let inFlight: Promise<TracePoint[]> | null = null
 
-function haversine(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const rad = Math.PI / 180
-  const dLat = (lat2 - lat1) * rad
-  const dLon = (lon2 - lon1) * rad
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLon / 2) ** 2
-  return 2 * R * Math.asin(Math.min(1, Math.sqrt(a)))
+async function fetchTrace(): Promise<TracePoint[]> {
+  const feature = await $fetch<GeoJSON.Feature<GeoJSON.LineString>>('/data/trace-main-elev.geojson')
+  const coords = feature.geometry.coordinates
+  const out: TracePoint[] = new Array(coords.length)
+  let cum = 0
+  for (let i = 0; i < coords.length; i++) {
+    const [lon = 0, lat = 0, ele = 0] = coords[i]!
+    if (i > 0) {
+      const [pLon = 0, pLat = 0] = coords[i - 1]!
+      cum += haversineM(pLat, pLon, lat, lon)
+    }
+    out[i] = { lat, lon, ele, km: cum / 1000 }
+  }
+  return out
 }
 
-// une seule requête en vol : les appels concurrents (TrailMap + profil) la partagent
-let enVol: Promise<TracePoint[]> | null = null
-
 export function useTrace() {
-  // markRaw : 8 866 points, aucune réactivité profonde (le tableau n'est jamais muté)
   const points = useState<TracePoint[] | null>('trace-main-points', () => null)
 
-  async function load(): Promise<TracePoint[]> {
-    if (points.value) return points.value
-    if (import.meta.server) return []
-    if (enVol) return enVol
-
-    enVol = (async () => {
-      const feature = await $fetch<GeoJSON.Feature<GeoJSON.LineString>>('/data/trace-main-elev.geojson')
-      const coords = feature.geometry.coordinates
-      const out: TracePoint[] = new Array(coords.length)
-      let cum = 0
-      for (let i = 0; i < coords.length; i++) {
-        const c = coords[i]!
-        const lon = c[0]!
-        const lat = c[1]!
-        const ele = c[2] ?? 0
-        if (i > 0) {
-          const p = coords[i - 1]!
-          cum += haversine(p[1]!, p[0]!, lat, lon)
-        }
-        out[i] = { lat, lon, ele, km: cum / 1000 }
-      }
-      points.value = markRaw(out)
-      return out
-    })()
-
-    try {
-      return await enVol
-    } finally {
-      enVol = null
-    }
+  function load(): Promise<TracePoint[]> {
+    if (points.value) return Promise.resolve(points.value)
+    if (import.meta.server) return Promise.resolve([])
+    inFlight ??= fetchTrace()
+      .then((pts) => {
+        // 8 866 points jamais mutés : pas de réactivité profonde
+        points.value = markRaw(pts)
+        return pts
+      })
+      .finally(() => {
+        inFlight = null
+      })
+    return inFlight
   }
 
   return { points, load }

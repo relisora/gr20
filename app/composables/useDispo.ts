@@ -1,16 +1,17 @@
+import type { FetchError } from 'ofetch'
 import type { DispoLevel, DispoSnapshot } from '~/types'
 
-export const DISPO_LEVEL_META: Record<DispoLevel, { label: string; color: string; hex: string }> = {
-  dispo: { label: '> 5 places', color: 'success', hex: '#059669' },
-  peu: { label: '≤ 5 places', color: 'warning', hex: '#d97706' },
-  complet: { label: 'Complet', color: 'error', hex: '#dc2626' },
+export const DISPO_LEVEL_META: Record<DispoLevel, { label: string, hex: string }> = {
+  dispo: { label: '> 5 places', hex: '#059669' },
+  peu: { label: '≤ 5 places', hex: '#d97706' },
+  complet: { label: 'Complet', hex: '#dc2626' },
 }
 
-// Snapshot du dernier rescan fait DEPUIS la page (route /api/rescan). Reconstituable à volonté :
-// pas de mécanique de copie type plan, les échecs d'écriture sont ignorés en silence.
+// Snapshot du dernier rescan fait depuis la page. Reconstituable à volonté : pas de copie de
+// sécurité, les échecs d'écriture sont ignorés.
 const SNAPSHOT_STORAGE_KEY = 'gr20-dispo-snapshot-v1'
 
-function lireSnapshotLocal(): DispoSnapshot | null {
+function readLocalSnapshot(): DispoSnapshot | null {
   if (!import.meta.client) return null
   try {
     const raw = localStorage.getItem(SNAPSHOT_STORAGE_KEY)
@@ -21,12 +22,26 @@ function lireSnapshotLocal(): DispoSnapshot | null {
   }
 }
 
-function ecrireSnapshotLocal(s: DispoSnapshot) {
+function writeLocalSnapshot(s: DispoSnapshot) {
   if (!import.meta.client) return
   try {
     localStorage.setItem(SNAPSHOT_STORAGE_KEY, JSON.stringify(s))
   } catch {
-    // quota / navigation privée : tant pis, le snapshot reste en mémoire pour la session
+    // quota ou navigation privée : le snapshot reste en mémoire pour la session
+  }
+}
+
+/** `/api/dispo` (URL stable, resservie hors ligne par NetworkFirst), sinon le fichier statique précaché. */
+async function fetchRemoteSnapshot(): Promise<DispoSnapshot | null> {
+  try {
+    return await $fetch<DispoSnapshot>('/api/dispo')
+  } catch {
+    // route absente sur un hébergement sans disque (Cloudflare Pages)
+  }
+  try {
+    return await $fetch<DispoSnapshot>('/data/dispo-snapshot.json')
+  } catch {
+    return null
   }
 }
 
@@ -39,29 +54,12 @@ export function useDispo() {
   async function load(force = false) {
     if (loaded.value && !force) return
     loaded.value = true
-    let distant: DispoSnapshot | null = null
-    try {
-      // URL stable (sans cache-buster) : /api/dispo renvoie déjà Cache-Control: no-store, et une URL
-      // constante permet à NetworkFirst de resservir la dernière réponse hors ligne.
-      distant = await $fetch<DispoSnapshot>('/api/dispo')
-    } catch {
-      try {
-        // repli : le fichier statique précaché (même forme ; /api/dispo n'existe pas sur un
-        // hébergement sans disque type Cloudflare Pages) ; sans query string, sinon le précache
-        // ne matche pas.
-        distant = await $fetch<DispoSnapshot>('/data/dispo-snapshot.json')
-      } catch {
-        distant = null
-      }
-    }
-    // le plus frais gagne : un rescan fait depuis la page (localStorage) est plus récent que le
-    // snapshot embarqué au build
-    const local = lireSnapshotLocal()
-    snapshot.value =
-      local && (!distant || local.scannedAt > distant.scannedAt) ? local : (distant ?? local)
+    const remote = await fetchRemoteSnapshot()
+    const local = readLocalSnapshot()
+    // le plus frais gagne : un rescan local est plus récent que le snapshot embarqué au build
+    snapshot.value = local && (!remote || local.scannedAt > remote.scannedAt) ? local : (remote ?? local)
   }
-  // Fallback client (la page /plan est ssr:false) ; les pages SSR font `await load()`
-  // dans leur setup pour avoir les pastilles dès le HTML serveur (useState transfère l'état).
+  // les pages SSR font `await load()` dans leur setup ; /plan (ssr: false) passe par ici
   if (import.meta.client) void load()
 
   /** Dispo par formule pour un hébergement à une date, ou null si hors snapshot. */
@@ -75,7 +73,6 @@ export function useDispo() {
     return dispoFor(accommodationId, dateIso)?.[formuleType] ?? null
   }
 
-  /** Dates couvertes par le snapshot, triées. */
   const snapshotDates = computed(() => {
     if (!snapshot.value) return []
     const all = new Set<string>()
@@ -95,22 +92,21 @@ export function useDispo() {
     })
   })
 
+  /** La route scanne en mémoire et retourne le snapshot : adopté, puis conservé pour cet appareil. */
   async function rescan(dateDebut: string, dateFin: string) {
     scanning.value = true
     scanError.value = null
     try {
-      // la route scanne en mémoire et RETOURNE le snapshot (pas d'écriture disque en prod) :
-      // on l'adopte directement et on le persiste pour les prochaines sessions de cet appareil
-      const res = await $fetch<{ ok: boolean; snapshot: DispoSnapshot }>('/api/rescan', {
+      const res = await $fetch<{ ok: boolean, snapshot: DispoSnapshot }>('/api/rescan', {
         method: 'POST',
         body: { dateDebut, dateFin },
         timeout: 120_000,
       })
       if (!res?.snapshot?.dispo) throw new Error('Scan terminé mais snapshot illisible.')
       snapshot.value = res.snapshot
-      ecrireSnapshotLocal(res.snapshot)
-    } catch (e: unknown) {
-      const err = e as { data?: { message?: string }; message?: string }
+      writeLocalSnapshot(res.snapshot)
+    } catch (e) {
+      const err = e as FetchError<{ message?: string }>
       scanError.value = err.data?.message ?? err.message ?? 'Échec du scan.'
     } finally {
       scanning.value = false

@@ -13,17 +13,29 @@ const tooltip = computed(() => {
 </script>
 
 <template>
-  <UTooltip v-if="rating && rating.note != null" :text="tooltip">
+  <UTooltip
+    v-if="rating && rating.note != null"
+    :text="tooltip"
+  >
     <ULink
       :to="rating.urlMaps ?? undefined"
       target="_blank"
       class="inline-flex items-center gap-1 text-xs font-medium"
       :class="rating.urlMaps ? 'hover:underline' : 'cursor-default'"
     >
-      <UIcon name="i-lucide-star" class="size-3.5 text-warning" />
+      <UIcon
+        name="i-lucide-star"
+        class="size-3.5 text-warning"
+      />
       <span class="tabular-nums">{{ rating.note.toLocaleString('fr-FR', { minimumFractionDigits: 1 }) }}</span>
-      <span v-if="rating.nbAvis != null" class="text-muted font-normal">({{ rating.nbAvis.toLocaleString('fr-FR') }} avis)</span>
-      <span v-if="rating.confiance !== 'haute'" class="text-muted font-normal">?</span>
+      <span
+        v-if="rating.nbAvis != null"
+        class="text-muted font-normal"
+      >({{ rating.nbAvis.toLocaleString('fr-FR') }} avis)</span>
+      <span
+        v-if="rating.confiance !== 'haute'"
+        class="text-muted font-normal"
+      >?</span>
     </ULink>
   </UTooltip>
 </template>

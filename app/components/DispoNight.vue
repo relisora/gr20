@@ -19,7 +19,10 @@ const entries = computed(() => {
 </script>
 
 <template>
-  <div v-if="entries.length" class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+  <div
+    v-if="entries.length"
+    class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs"
+  >
     <span class="text-muted">Dispo pnr-resa ({{ formatDateFr(dateIso) }}) :</span>
     <span
       v-for="e in entries"
@@ -28,7 +31,10 @@ const entries = computed(() => {
       :class="selectedFormule === e.type ? 'font-semibold' : 'text-muted'"
       :title="DISPO_LEVEL_META[e.level].label"
     >
-      <span class="inline-block size-2 rounded-full" :style="{ backgroundColor: DISPO_LEVEL_META[e.level].hex }" />
+      <span
+        class="inline-block size-2 rounded-full"
+        :style="{ backgroundColor: DISPO_LEVEL_META[e.level].hex }"
+      />
       {{ FORMULE_LABELS[e.type] }}
     </span>
   </div>

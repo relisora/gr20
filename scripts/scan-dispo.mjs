@@ -27,9 +27,8 @@ function parseArgs(argv) {
     else throw new Error(`Argument inconnu : ${argv[i]}`)
   }
   const debut = args.debut ?? localIsoDate()
-  const fin = args.fin ?? addDays(debut, 13)
-  validerPlage(debut, fin)
-  return { debut, fin }
+  const fin = args.fin ?? addDays(validerPlage(debut, debut).debut, 13) // valide `debut` avant de le décaler
+  return validerPlage(debut, fin)
 }
 
 async function main() {

@@ -105,7 +105,7 @@ export function useMeteoHoraire() {
 
   async function fetchJournee(date: string, positions: PositionHeure[], cle: string) {
     // positions dédupliquées → moins de points dans l'URL, et une table heure → index de point
-    const coords: { lat: number; lon: number; ele: number }[] = []
+    const coords: { lat: number, lon: number, ele: number }[] = []
     const indexParCle = new Map<string, number>()
     const indexParHeure: number[] = []
     for (const p of positions) {
@@ -193,7 +193,7 @@ export function useMeteoHoraire() {
         } finally {
           enVolParDate.delete(day.date)
         }
-      })
+      }),
     )
     if (echec) error.value = 'Météo horaire incomplète (Open-Meteo injoignable)'
     loading.value = false

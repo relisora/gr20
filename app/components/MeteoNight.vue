@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{ waypointId: string; dateIso: string; altitude?: number }>()
+const props = defineProps<{ waypointId: string, dateIso: string, altitude?: number }>()
 
 const { meteoFor } = useMeteo()
 const jour = computed(() => meteoFor(props.waypointId, props.dateIso))
@@ -22,9 +22,18 @@ const tooltip = computed(() => {
 </script>
 
 <template>
-  <UTooltip v-if="jour && meta" :text="tooltip">
-    <span class="inline-flex items-center gap-1 text-xs tabular-nums" :class="alerte ? 'text-error font-medium' : 'text-muted'">
-      <UIcon :name="meta.icon" class="size-4" />
+  <UTooltip
+    v-if="jour && meta"
+    :text="tooltip"
+  >
+    <span
+      class="inline-flex items-center gap-1 text-xs tabular-nums"
+      :class="alerte ? 'text-error font-medium' : 'text-muted'"
+    >
+      <UIcon
+        :name="meta.icon"
+        class="size-4"
+      />
       <span>{{ jour.tMinC }}°/{{ jour.tMaxC }}°</span>
       <span v-if="jour.precipMm >= 1">· {{ jour.precipMm }} mm</span>
       <span v-if="jour.ventMaxKmh >= 40">· {{ jour.ventMaxKmh }} km/h</span>
