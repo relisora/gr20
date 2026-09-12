@@ -4,6 +4,11 @@ node_modules/
 dist/
 *.log
 .DS_Store
+.env
+.env.*
+.wrangler/
+.idea/
+.vscode/
 
-# copies générées depuis data/raw (npm run data:publish)
+# copies générées depuis data/raw (npm run data:publish) et snapshot de dispo (npm run data:dispo)
 public/data/
