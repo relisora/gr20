@@ -7,7 +7,8 @@ messages de commit). S'y conformer.
 
 ## Nature du projet
 
-« Fra li Monti » : outil **personnel** de planification du GR20 (Nuxt 4 + Nuxt UI v4 + Leaflet).
+« Fra li Monti » : planificateur du GR20 (Nuxt 4 + Nuxt UI v4 + Leaflet), né comme outil
+personnel et publié en open source (MIT).
 Pas de comptes, pas de backend, pas de base de données — les données de référence sont du **JSON
 versionné dans le repo**, le plan de l'utilisateur vit dans **localStorage**, et les 5 pages sont
 prérendues pour fonctionner **hors ligne** (PWA). Le cadrage produit et les contraintes juridiques
@@ -22,6 +23,8 @@ npm run data:publish     # OBLIGATOIRE après clone : copie data/raw/trace-*-ele
 npm run dev              # http://localhost:3000
 npm run build            # prérend / /carte /hebergements /meteo /plan (prebuild rejoue data:publish)
 npm run preview
+npm run lint             # ESLint (@nuxt/eslint + stylistic : pas de point-virgule, guillemets simples, 1tbs)
+npm run typecheck        # vue-tsc via nuxt typecheck
 ```
 
 Disponibilités des refuges (scan manuel, jamais automatisé) :
@@ -41,7 +44,7 @@ node scripts/calibrate-times.mjs       # NE PAS OUBLIER : sinon les temps sont c
 npm run data:publish
 ```
 
-Hébergement : **Cloudflare Pages** (cf. README). Deux invariants quel que soit l'hébergeur :
+Hébergement : **Cloudflare Pages**. Deux invariants quel que soit l'hébergeur :
 
 - **servi en HTTPS, à la racine d'une origine** : un service worker ne s'enregistre pas en clair,
   et `scope` / `navigateFallback` / `/_nuxt/…` supposent la racine (pas de sous-chemin). Sinon le
@@ -51,9 +54,8 @@ Hébergement : **Cloudflare Pages** (cf. README). Deux invariants quel que soit 
   snapshot statique précaché — comportement prévu, ne pas « corriger ». `public/data/` étant
   gitignoré, un build CI n'embarque aucun snapshot (pastilles vides).
 
-**Pas d'ESLint, pas de Prettier, pas de tests, pas de `typecheck`** (ni `vue-tsc` ni `eslint`
-installés). Ne pas inventer de commande de vérification : le contrôle se fait via `npm run build`
-et l'app en dev.
+**Pas de tests automatisés.** Le contrôle passe par `npm run lint`, `npm run typecheck` et
+`npm run build` (la CI GitHub exécute les trois), puis par l'app en dev.
 
 ## Architecture
 
@@ -71,24 +73,28 @@ source de vérité** pour toutes les distances/D+/temps de l'app :
 - Conséquence structurante : **tout est linéaire**. `segmentsBetween(from, to)` marche par indices
   dans `waypoint_order` et retourne `[]` si `to` précède `from`. Un waypoint hors tracé doit porter
   `off_route: true` (il est alors exclu du graphe).
+- `haversineM` (`shared/geo.mjs`) est l'unique implémentation de la distance, partagée par les
+  scripts node et `useTrace` (import `#shared/geo.mjs`).
 
 ### Composables (`app/composables/`)
 
 - **`useGr20`** — référentiel statique. Les JSON sont importés (`~~/data/*.json`), transformés **une
-  seule fois au niveau module** (Map par id, `stageRows`, totaux) : ce n'est **pas** réactif, c'est
-  du calcul à l'import, partagé par tous les appelants. Y ajouter un dérivé du référentiel plutôt
-  que de recalculer dans une page.
+  seule fois au niveau module** (Map par id, `stageRows`, totaux, `officialNightIds`) : ce n'est
+  **pas** réactif, c'est du calcul à l'import, partagé par tous les appelants. Y ajouter un dérivé du
+  référentiel plutôt que de recalculer dans une page. `sumSegments(segs, paceFactor)` est la seule
+  façon d'agréger distance / D+ / D- / temps d'une suite de segments.
 - **`usePlan`** — plan de trek : `useState` + persistance localStorage déléguée à
   `app/utils/planStorage.ts` (cf. « Sauvegarde du plan » plus bas). `days` recompose les journées à
-  partir des nuitées choisies (départ et arrivée sont implicites, jamais des nuitées). Contient aussi
+  partir des nuitées choisies (départ et arrivée sont implicites, jamais des nuitées) ; chaque
+  journée porte son `accommodation` résolu. Contient aussi `arrivalWaypoints` (points météo),
   l'échéancier PNRC, l'alerte de saison et `storageNotices` (état de la sauvegarde à afficher).
 - **`useDispo`** — snapshot de dispo : `$fetch('/api/dispo')`, repli sur `/data/dispo-snapshot.json`
   (précaché) si l'API est injoignable. `DISPO_LEVEL_META` est la légende partagée.
 - **`useMeteo`** — Open-Meteo : **une seule requête multi-points** (lat/lon/elevation joints par
   virgules) pour tous les waypoints du plan, TTL 1 h **par waypoint**, déduplication de la requête
-  en vol. Réponse = objet si 1 point, tableau si N. La liste de points est identique entre `/plan`
-  et `/meteo` (arrivées de toutes les journées datées, sans fenêtre glissante) : même URL → même
-  entrée de cache service worker.
+  en vol. Réponse = objet si 1 point, tableau si N. La liste de points est `usePlan().arrivalWaypoints`
+  (arrivées de toutes les journées datées, sans fenêtre glissante), partagée par `/plan` et `/meteo` :
+  même URL → même entrée de cache service worker.
 - **`useMeteoHoraire`** — météo heure par heure de `/meteo` : estime la position du randonneur à
   chaque heure pleine (temps calibrés des segments × `paceFactor`, interpolation dans les indices
   `segment.trace.start/end` du tracé), puis **une requête Open-Meteo `hourly` par journée datée à
@@ -204,15 +210,17 @@ sont fragiles et documentés en commentaire dans `nuxt.config.ts` — les lire a
 Nuxt UI v4 exclusivement — `app/assets/css/main.css` ne contient que deux `@import`, il n'y a pas de
 CSS maison (un commit a explicitement remplacé le CSS artisanal par des composants Nuxt UI). Thème :
 `primary: emerald`, `neutral: stone` (`app/app.config.ts`), locale `fr` sur `<UApp>`, icônes
-`i-lucide-*`. Les libellés/couleurs partagés vivent dans des `*_META` exportés
-(`app/utils/format.ts`, `usePlan`, `useDispo`) — les réutiliser au lieu de redéfinir des labels.
+`i-lucide-*`. Les libellés/couleurs partagés vivent dans des `*_META` exportés (`app/utils/format.ts`,
+`useDispo`) — les réutiliser au lieu de redéfinir des labels. `WAYPOINT_TYPE_META` donne la couleur
+des lieux, commune à la carte, au profil et à la légende ; les `color` sont typés `BadgeProps['color']`,
+donc pas de `as any` dans les templates.
 Leaflet est importé dans `TrailMap.vue`, toujours monté sous `<ClientOnly>`.
 
 ## Conventions et pièges
 
-- **Dates** : toujours des chaînes ISO `YYYY-MM-DD`. Pour « aujourd'hui » en heure locale,
-  `new Date().toLocaleDateString('en-CA')` (`toISOString()` est UTC → date de la veille après
-  minuit en France). Pour parser sans décalage : `new Date(iso + 'T12:00:00')`.
+- **Dates** : toujours des chaînes ISO `YYYY-MM-DD`, manipulées via `todayIso()`, `addDaysIso()` et
+  `formatDateFr()` (`app/utils/dates.ts`). Jamais `toISOString().slice(0, 10)` pour une date locale
+  (UTC → date de la veille après minuit en France) ; parser avec `new Date(iso + 'T12:00:00')`.
 - **localStorage sur page SSR** : restaurer dans `onMounted` (cf. `hebergements.vue`), jamais dans
   le setup, sinon mismatch d'hydratation. `/plan` est `ssr: false` et échappe à cette contrainte.
 - **Tarifs des tentes PNRC** : facturées **à la tente** (2 places), pas à la personne —

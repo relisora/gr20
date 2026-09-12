@@ -11,6 +11,11 @@
 - **Hébergements & tarifs** : compilation manuelle (sources croisées : pnr-resa.corsica,
   gr20-infos.com, treksimple.fr, refuges.info, sites des établissements), vérifiée pour la
   saison 2026. Données volatiles — à re-vérifier chaque saison.
+- **Notes Google** (`google-ratings.json`) : relevé manuel des fiches Google Maps, à titre
+  indicatif (note, nombre d'avis, lien vers la fiche) ; pas de contenu d'avis.
+
+Les compilations manuelles de ce dossier sont publiées sous la même licence que le code (MIT) ;
+les tracés restent sous ODbL et leurs altitudes sous Etalab 2.0 (cf. [LICENSE](../LICENSE)).
 
 ## Fichiers
 
