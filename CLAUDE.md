@@ -11,8 +11,8 @@ messages de commit). S'y conformer.
 personnel et publié en open source (MIT).
 Pas de comptes, pas de backend, pas de base de données — les données de référence sont du **JSON
 versionné dans le repo**, le plan de l'utilisateur vit dans **localStorage**, et les 5 pages sont
-prérendues pour fonctionner **hors ligne** (PWA). Le cadrage produit et les contraintes juridiques
-sont dans [BRAINSTORM.md](BRAINSTORM.md) ; la provenance des données dans [data/README.md](data/README.md).
+prérendues pour fonctionner **hors ligne** (PWA). La provenance des données est dans
+[data/README.md](data/README.md).
 
 ## Commandes
 
@@ -207,8 +207,8 @@ sont fragiles et documentés en commentaire dans `nuxt.config.ts` — les lire a
 
 ### UI
 
-Nuxt UI v4 exclusivement — `app/assets/css/main.css` ne contient que deux `@import`, il n'y a pas de
-CSS maison (un commit a explicitement remplacé le CSS artisanal par des composants Nuxt UI). Thème :
+Nuxt UI v4 exclusivement — `app/assets/css/main.css` ne contient que deux `@import`, pas de CSS
+maison. Thème :
 `primary: emerald`, `neutral: stone` (`app/app.config.ts`), locale `fr` sur `<UApp>`, icônes
 `i-lucide-*`. Les libellés/couleurs partagés vivent dans des `*_META` exportés (`app/utils/format.ts`,
 `useDispo`) — les réutiliser au lieu de redéfinir des labels. `WAYPOINT_TYPE_META` donne la couleur
